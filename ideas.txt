@@ -1,0 +1,4 @@
+- Shazam for languages; extend to accents
+- Mood to music; play music based off vibe of a drawing
+- AI app that categorises food items based on how healthy it is / detects allergens
+- 

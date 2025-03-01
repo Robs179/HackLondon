@@ -123,5 +123,5 @@ class TfLFareManager:
 if __name__ == '__main__':
     fares = TfLFareManager.find_fares('910GWATFDJ', '910GGTWK', railcard=True)
     print(fares)
-    stations = TfLFareManager.name_to_code('Stratford')
+    stations = TfLFareManager.name_to_code('Gatwick Airport Rail')
     print(stations)

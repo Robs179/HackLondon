@@ -6,6 +6,7 @@ import urllib
 
 
 class NRFareManager:
+    # All class methods. DO NOT INSTANTIATE!
     @classmethod
     def fare_calculator(cls, origin_code, destination_code, time='0900', date='2025-03-03', railcard=True) -> Fare:
         # Build the URL
@@ -101,6 +102,8 @@ class NRFareManager:
             description=min_fare_text.strip()
         )
 
+
+
 if __name__ == '__main__':
-    fare = NRFareManager.fare_calculator('CBG', 'GFD')
+    fare = NRFareManager.fare_calculator('GTW', 'STP')
     print(fare)

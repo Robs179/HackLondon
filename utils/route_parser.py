@@ -113,7 +113,7 @@ class RouteParser:
 
 
 if __name__ == "__main__":
-    routes = RouteParser.route_finder('910GSTFD', '910GGTWK')
+    routes = RouteParser.route_finder('910GBONDST', '910GGTWK')
     print(routes)
     for route in routes:
         print(RouteParser.calculateTfLFares(route, 2100,True, True))

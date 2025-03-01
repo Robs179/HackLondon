@@ -24,6 +24,9 @@ class Fare:
                 f" Cost = {self.cost}, Is Peak? {self.is_peak}, Is Alternative? {self.is_alternative}, "
                 f" Is NR? {self.is_nr}, Route Description =  {self.description}||")
 
+    def to_json(self):
+        return json.dumps(self.__dict__)
+
 
 class Station:
     tfl_code: str
@@ -39,6 +42,9 @@ class Station:
 
     def __repr__(self):
         return f"||TfL code: {self.tfl_code}, NR Code: {self.nr_code}, name = {self.name}, is NR? {self.is_nr}||"
+
+    def to_json(self):
+        return json.dumps(self.__dict__)
 
 
 class TfLFareManager:
@@ -117,7 +123,7 @@ class TfLFareManager:
 
 
 if __name__ == '__main__':
-    fares = TfLFareManager.find_fares('910GECROYDN', '910GWATRLMN', railcard=True)
+    fares = TfLFareManager.find_fares('940GZZLURSQ', '910GGTWK', railcard=True)
     print(fares)
-    stations = TfLFareManager.name_to_code('Oxford')
+    stations = TfLFareManager.name_to_code('Gatwick Airport Rail')
     print(stations)

@@ -5,7 +5,7 @@ class RouteParser:
     # All class methods. DO NOT INSTANTIATE!
 
     @classmethod
-    def route_finder(cls, origin: str, destination: str) -> [(str, str)]:
+    def route_finder(cls, origin: str, destination: str) -> [[(str, str)]]:
         # returns the list of stations, only points of interchange, as a list of tuples
         url = 'https://api.tfl.gov.uk/'
         path = f'Journey/JourneyResults/{origin}/to/{destination}'
@@ -25,7 +25,6 @@ class RouteParser:
                 departure = leg.get("departurePoint", {})
                 arrival = leg.get("arrivalPoint", {})
 
-                # Create Station objects from the stop point information.
                 # Here we use the "naptanId" as the tfl_code and "commonName" as the station name.
                 dep_station = departure.get("naptanId", "")
                 arr_station = arrival.get("naptanId", "")
@@ -34,13 +33,14 @@ class RouteParser:
                     # Append the tuple (boarding station, alighting station)
                     journey_tuples.append((dep_station, arr_station))
 
-            if not journey_tuples in station_tuples and not journey_tuples == []:
+            if (not journey_tuples in station_tuples) and (not journey_tuples == []):
                 station_tuples.append(journey_tuples)
 
         return station_tuples
 
+
 if __name__ == "__main__":
-    routes = RouteParser.route_finder('910GSTPADOM', '910GWATRLMN')
+    routes = RouteParser.route_finder('940GZZLURSQ', '920GLGW0')
     print(routes)
 
 

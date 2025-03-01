@@ -36,12 +36,84 @@ class RouteParser:
             if (not journey_tuples in station_tuples) and (not journey_tuples == []):
                 station_tuples.append(journey_tuples)
 
-        return station_tuples
+        return cls.combine_lu_legs(station_tuples)
+
+
+    # where appropriate, combine the journeys of the same type
+    # taking advantage that all NR fares start with 910, and non-NR fares start with 940
+    @classmethod
+    def combine_lu_legs(cls, journeys):
+        combined_journeys = []
+        for journey in journeys:
+            # Discard the journey if any station code does not start with 910 or 940
+            if any(not (station.startswith('910') or station.startswith('940'))
+                   for leg in journey for station in leg):
+                continue
+
+            new_journey = []
+            current_non_nr_start = None
+            current_non_nr_end = None
+
+            for leg in journey:
+                origin, destination = leg
+                # Check if the leg is a non-national rail leg (both codes start with 940)
+                if origin.startswith('940') and destination.startswith('940'):
+                    if current_non_nr_start is None:
+                        current_non_nr_start = origin
+                    current_non_nr_end = destination
+                else:
+                    # Flush any accumulated non-national rail segment before processing this leg
+                    if current_non_nr_start is not None:
+                        new_journey.append((current_non_nr_start, current_non_nr_end))
+                        current_non_nr_start = None
+                        current_non_nr_end = None
+                    new_journey.append(leg)
+
+            # Flush any remaining non-national rail segment at the end of the journey
+            if current_non_nr_start is not None:
+                new_journey.append((current_non_nr_start, current_non_nr_end))
+
+            combined_journeys.append(new_journey)
+        return combined_journeys
+
+    @classmethod
+    def calculateTfLFares(cls, journey, time, railcard) -> {(str, str): float}:
+        """
+        Calculates TfL fares for any valid partition by calling TfLFareManager.find_fares.
+        Outputs a dictionary with keys as tuples (origin, destination) and values as the lowest non-alternative fare.
+        """
+        # Determine if the time is during peak hours
+        peak = 640 <= time <= 930 or 1600 <= time <= 1900
+
+        fares_dict = {}
+
+        # Generate all possible origin-destination pairs
+        for i in range(len(journey)):
+            origin = journey[i][0]
+            for j in range(i, len(journey)):
+                destination = journey[j][1]
+                # Retrieve all fares for this origin-destination pair
+                fares = TfLFareManager.find_fares(origin, destination, railcard)
+                # Filter out alternative fares and those not matching peak status
+                valid_fares = [
+                    fare for fare in fares
+                    if not fare.is_alternative and fare.is_peak == peak
+                ]
+                # Find the minimum cost fare
+                if valid_fares:
+                    min_fare = min(valid_fares, key=lambda f: f.cost)
+                    fares_dict[(origin, destination)] = min_fare.cost
+
+        return fares_dict
+
+
 
 
 if __name__ == "__main__":
-    routes = RouteParser.route_finder('940GZZLURSQ', '920GLGW0')
+    routes = RouteParser.route_finder('910GAMERSHM', '910GGTWK')
     print(routes)
+    for route in routes:
+        print(RouteParser.calculateTfLFares(route, 1500, True))
 
 
 

@@ -1,6 +1,6 @@
 import requests
 import json
-
+from nr_fare_calculator import *
 
 class Fare:
     origin_code: str
@@ -50,8 +50,7 @@ class Station:
 class TfLFareManager:
     # All methods to be static for organisation purposes. DO NOT INSTANTIATE!
     @classmethod
-    def find_fares(cls, origin_code: str, destination_code: str, railcard=False,
-                               show_alternative_fares=False) -> list:
+    def find_fares(cls, origin_code: str, destination_code: str, railcard=False) -> list:
         # Assemble the API path
         url = 'https://api.tfl.gov.uk/'
         path = f'/stoppoint/{origin_code}/fareto/{destination_code}'
@@ -123,7 +122,7 @@ class TfLFareManager:
 
 
 if __name__ == '__main__':
-    fares = TfLFareManager.find_fares('940GZZLURSQ', '910GGTWK', railcard=True)
+    fares = TfLFareManager.find_fares('910GCMDNRD', '910GHGHI', railcard=True)
     print(fares)
-    stations = TfLFareManager.name_to_code('Gatwick Airport Rail')
+    stations = TfLFareManager.name_to_code('Amersham')
     print(stations)

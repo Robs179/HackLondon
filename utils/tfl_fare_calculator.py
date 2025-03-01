@@ -61,10 +61,6 @@ class TfLFareManager:
                     fare = Fare(origin_code, destination_code, cost, is_peak, is_alternative, False)
                     fares.append(fare)
 
-        # Print the list of Fare objects
-        for fare in fares:
-            print(fare)
-
         return fares
 
 

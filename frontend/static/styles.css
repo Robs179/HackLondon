@@ -1,4 +1,10 @@
 /* Modern reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background-color: #eef2f7;
     font-family: "Poppins", Arial, sans-serif;
@@ -52,11 +58,12 @@ label {
 input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 10px 0px;
     border: 2px solid #ccc;
     border-radius: 6px;
     font-size: 1em;
     transition: border-color 0.3s;
+    box-sizing: border-box; /* Added to include padding and border in width calculation */
 }
 input:focus {
     border-color: #4CAF50;
@@ -83,9 +90,12 @@ button:hover {
 
 /* Dark Mode Toggle Button */
 #dark-mode-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    display: block;
+    margin: 20px auto;
+    width: auto;
+    white-space: nowrap;
+    justify-content: center;
+    align-items: center;
     background: #222;
     color: #fff;
     border: none;

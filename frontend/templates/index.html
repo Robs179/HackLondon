@@ -8,19 +8,24 @@
 </head>
 <body>
     <button id="dark-mode-toggle">Dark Mode 🌙</button>
-    <h1>UK Ticket Optimizer 🎫</h1>
+    <h1>FairFinder 🎫</h1>
     
     <div class="container">
         <label for="from">From:</label>
-        <input type="text" id="from" placeholder="Enter departure station">
+        <input type="text" id="from" placeholder="Enter departure">
     
         <label for="to">To:</label>
-        <input type="text" id="to" placeholder="Enter destination station">
+        <input type="text" id="to" placeholder="Enter destination">
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="railcard" name="railcard">
+            <label for="railcard">I have a Railcard</label>
+        </div>
     
         <button onclick="getFares()">Find Cheapest Fare</button>
     </div>
     
-    <h2>Results</h2>
+    <h2 id="results-title" style="display: none;">Results</h2>
     <div id="results"></div>
 
     <script src="../app.js"></script>

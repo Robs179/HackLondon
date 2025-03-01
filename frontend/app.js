@@ -2,9 +2,10 @@
 async function getFares() {
     let fromStation = document.getElementById("from").value;
     let toStation = document.getElementById("to").value;
+    let hasRailcard = document.getElementById("railcard").checked;
 
     // Fetch data from the backend API
-    let response = await fetch(`http://127.0.0.1:8000/get-fares/?from_station=${fromStation}&to_station=${toStation}`);
+    let response = await fetch(`http://127.0.0.1:8000/get-fares/?from_station=${fromStation}&to_station=${toStation}&railcard=${hasRailcard}`);
     let data = await response.json();
 
     // Update results in the UI
@@ -15,9 +16,11 @@ async function getFares() {
         </div>
         <div class="result-card">
             <h3>🚆 National Rail Fare:</h3> 
-            <p>£${data.national_rail_fares}</p>
+            <p>${hasRailcard ? '(With Railcard) ' : ''}£${data.national_rail_fares}</p>
         </div>
     `;
+    document.getElementById("results").style.display = "block"; // Added to show results
+    document.getElementById("results-title").style.display = "block"; // Show results title
 }
 
 // Function to handle Dark Mode toggle
@@ -45,9 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if dark mode was previously enabled
     if (localStorage.getItem("darkMode") === "enabled") {
         body.classList.add("dark-mode");
-        toggleButton.textContent = "☀️ Light Mode";
+        toggleButton.textContent = "Light Mode ☀️";
     } else {
-        toggleButton.textContent = "🌙 Dark Mode";
+        toggleButton.textContent = "Dark Mode 🌙";
     }
 
     // Attach event listener to the toggle button

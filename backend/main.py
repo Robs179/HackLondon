@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 from config import Config
+# Updated import from utils package:
+from utils.route_parser import RouteParser as rp
 
 app = FastAPI()
 
@@ -21,6 +23,10 @@ NATIONAL_RAIL_API_URL = "https://api.nationalrail.co.uk/fares"
 @app.get("/")
 def home():
     return {"message": "Ticket Optimizer API"}
+
+@app.get("/get-fares-tfl/")
+def get_fares_tfl(from_station: str, to_station: str):
+    return rp.route_finder(from_station, to_station)
 
 @app.get("/get-fares/")
 def get_fares(from_station: str, to_station: str):

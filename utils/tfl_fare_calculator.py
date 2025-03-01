@@ -20,9 +20,9 @@ class Fare:
         self.description = description
 
     def __repr__(self):
-        return (f"Origin code = {self.origin_code}, Destination code = {self.destination_code}"
+        return (f"||Origin code = {self.origin_code}, Destination code = {self.destination_code}"
                 f" Cost = {self.cost}, Is Peak? {self.is_peak}, Is Alternative? {self.is_alternative}, "
-                f" Is NR? {self.is_nr}, Route Description =  {self.description}")
+                f" Is NR? {self.is_nr}, Route Description =  {self.description}||")
 
 
 class Station:
@@ -38,7 +38,7 @@ class Station:
         self.nr_code = nrc
 
     def __repr__(self):
-        return f"TfL code: {self.tfl_code}, NR Code: {self.nr_code}, name = {self.name}, is NR? {self.is_nr}"
+        return f"||TfL code: {self.tfl_code}, NR Code: {self.nr_code}, name = {self.name}, is NR? {self.is_nr}||"
 
 
 class TfLFareManager:
@@ -87,7 +87,7 @@ class TfLFareManager:
     @classmethod
     def name_to_code(cls, search_string: str) -> [Station]:
         url = 'https://api.tfl.gov.uk/'
-        path = f'Stoppoint/Search/{search_string}?includeHubs=false&modes=tube,dlr,overground,elizabeth-line,national-rail&faresOnly=true'
+        path = f'Stoppoint/Search/{search_string}?includeHubs=false&modes=tube,dlr,overground,elizabeth-line,national-rail'
 
         request_url = url + path
 
@@ -116,9 +116,8 @@ class TfLFareManager:
         return stations
 
 
-
 if __name__ == '__main__':
     fares = TfLFareManager.find_fares('910GECROYDN', '910GWATRLMN', railcard=True)
     print(fares)
-    stations = TfLFareManager.name_to_code('Stratford')
+    stations = TfLFareManager.name_to_code('Oxford')
     print(stations)

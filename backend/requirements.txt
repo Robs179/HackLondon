@@ -1,4 +1,6 @@
 fastapi
 uvicorn
 requests
+pandas
+beautifulsoup4
 json

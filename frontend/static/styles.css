@@ -6,15 +6,21 @@
 }
 
 body {
-    background-color: #eef2f7;
+    /* Light Mode Background using lighttrain.jpg */
+    background-image: url("images/lighttrain.jpg");
+    background-repeat: no-repeat;
+    /* background-size: cover; */
     font-family: "Poppins", Arial, sans-serif;
     text-align: center;
     padding: 20px;
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 /* Light & Dark Mode Toggle */
 body.dark-mode {
+    /* Dark Mode Background using dark-train.jpg */
+    background: url("images/darktrain.jpg") no-repeat center center fixed;
+    background-size: cover;
     background-color: #1e1e1e;
     color: #ffffff;
 }
@@ -111,6 +117,7 @@ body.dark-mode #dark-mode-toggle {
 
 /* Results Section */
 #results {
+    display: none; /* Added to hide results when empty */
     margin-top: 20px;
     padding: 20px;
     background: white;
@@ -136,4 +143,29 @@ body.dark-mode #results {
 }
 body.dark-mode .result-card {
     background: #444;
+}
+
+/* Checkbox Container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkbox-container label {
+    display: inline;
+    margin: 0;
+    cursor: pointer;
+}
+
+body.dark-mode .checkbox-container label {
+    color: #ffffff;
 }

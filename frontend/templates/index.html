@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Optimizer</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <button id="dark-mode-toggle">🌙 Dark Mode</button>
+    <h1>UK Ticket Optimizer 🎫</h1>
+    
+    <div class="container">
+        <label for="from">From:</label>
+        <input type="text" id="from" placeholder="Enter departure station">
+    
+        <label for="to">To:</label>
+        <input type="text" id="to" placeholder="Enter destination station">
+    
+        <button onclick="getFares()">Find Cheapest Fare</button>
+    </div>
+    
+    <h2>Results</h2>
+    <div id="results"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+body {
+    background-color: #f4f7f9;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+h1 {
+    /* New header styling */
+    color: #333;
+    margin-bottom: 20px;
+}
+label {
+    /* Added for better form structure */
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+input, button {
+    /* Enhanced form elements */
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+input:focus {
+    outline: none;
+    border-color: #66afe9;
+}
+button {
+    display: block; /* Added to ensure button is on its own line */
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #45a049;
+}

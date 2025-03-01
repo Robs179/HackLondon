@@ -27,7 +27,7 @@ def get_fares(from_station: str, to_station: str):
     # Call TfL API
     tfl_response = requests.get(f"{tfl_url}/{from_station}/to/{to_station}")
     
-    # Call National Rail API
+    # Call BR Fares API
     national_rail_response = requests.get(f"{NATIONAL_RAIL_API_URL}?from={from_station}&to={to_station}")
 
     return {

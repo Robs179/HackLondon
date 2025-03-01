@@ -1,0 +1,1959 @@
+openapi: 3.0.3
+info:
+  title: BR Fares Legacy API
+  description: |
+    The Legacy BR Fares API is now available with a fully Swagger-compliant
+    specification! Here on this page you can browse all the API endpoints and, if
+    you have requested access credentials from us, also try them out directly from
+    your browser. The functionality available includes:
+     * fares searches with various levels of detail
+     * rover and rangers
+     * detailed ticket and railcard information
+     * detailed information on time restrictions, both in human-readable and
+       machine-readable format
+     * autocomplete lookups for location, railcard and rover names
+
+    For more details you can read the individual endpoint documentation below, or
+    have a look at our [Getting Started Guide](https://www.brfares.com/api/doc.html).
+
+    For questions or for more information please don't hesitate to contact us via
+    [info@brfares.com](mailto:info@brfares.com).
+  version: 1.1.3
+  contact:
+    name: BR Fares Ltd.
+    email: info@brfares.com
+  license:
+    name: Data Licensing
+    url: https://www.brfares.com/api/licensing.html
+externalDocs:
+  description: ChangeLog
+  url: https://www.brfares.com/api/legacy/changelog.html
+components:
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+  schemas:
+    simple_response:
+      type: object
+      title: Simple Fare Query Response
+      required:
+        - correct
+      properties:
+        correct:
+          $ref: '#/components/schemas/correct'
+        orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Origin Location
+        dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Destination Location
+        travelcard_orig:
+          $ref: '#/components/schemas/travelcard_orig'
+        travelcard_dest:
+          $ref: '#/components/schemas/travelcard_dest'
+        zonal_orig:
+          $ref: '#/components/schemas/zonal_orig'
+        zonal_dest:
+          $ref: '#/components/schemas/zonal_dest'
+        railcard:
+          $ref: '#/components/schemas/railcard'
+        railcard_valid:
+          $ref: '#/components/schemas/railcard_valid'
+        fares:
+          type: array
+          title: List of fares
+          description: List of all fares available between origin and destination
+          items:
+            $ref: '#/components/schemas/simple_fare'
+        source:
+          $ref: '#/components/schemas/data_source'
+        valid_date:
+          $ref: '#/components/schemas/valid_date'
+        valid_until_date:
+          $ref: '#/components/schemas/valid_until_date'
+    simple_fare:
+      type: object
+      title: Fare (Simple Query)
+      description: An individual fare in a simple query response
+      properties:
+        category:
+          $ref: '#/components/schemas/fare_category'
+        flow_orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Origin location of the internal database _flow_ from which
+            this fare was derived
+        flow_dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Destination location of the internal database _flow_ from which
+            this fare was derived
+        group_orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: If the fare origin is a fares group, details of that location
+        group_dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: If the fare destination is a fares group, details of that location
+        travelcard_orig:
+          $ref: '#/components/schemas/travelcard_orig'
+        travelcard_dest:
+          $ref: '#/components/schemas/travelcard_dest'
+        zonal_orig:
+          $ref: '#/components/schemas/zonal_orig'
+        zonal_dest:
+          $ref: '#/components/schemas/zonal_dest'
+        fare_setter:
+          $ref: '#/components/schemas/fare_setter'
+        route:
+          $ref: '#/components/schemas/route'
+        london_code:
+          $ref: '#/components/schemas/london_code'
+        ticket:
+          $ref: '#/components/schemas/ticket'
+        restriction_code:
+          $ref: '#/components/schemas/restriction_code'
+        railcard_restrictions:
+          type: array
+          title: Restriction Codes
+          description: Additional restriction codes that apply to this fare by virtue
+            of the railcard used
+          items:
+            $ref: '#/components/schemas/restriction_code'
+        reversible:
+          type: boolean
+          description: Fare exists in reverse direction (i.e. destination to origin)
+            with exact same price and restrictions
+        adult:
+          $ref: '#/components/schemas/status_price'
+        child:
+          $ref: '#/components/schemas/status_price'
+    expert_response:
+      type: object
+      title: Expert Fare Query Response
+      required:
+        - correct
+      properties:
+        correct:
+          $ref: '#/components/schemas/correct'
+        orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Origin Location
+        dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Destination Location
+        travelcard_orig:
+          $ref: '#/components/schemas/travelcard_orig'
+        travelcard_dest:
+          $ref: '#/components/schemas/travelcard_dest'
+        zonal_orig:
+          $ref: '#/components/schemas/zonal_orig'
+        zonal_dest:
+          $ref: '#/components/schemas/zonal_dest'
+        railcard:
+          $ref: '#/components/schemas/railcard'
+        railcard_valid:
+          $ref: '#/components/schemas/railcard_valid'
+        flows:
+          type: array
+          title: Flows
+          description: List of all fares available between origin and destination
+          items:
+            $ref: '#/components/schemas/expert_flow'
+        source:
+          $ref: '#/components/schemas/data_source'
+        reversible:
+          type: boolean
+          description: At least one fare exists in the reverse direction (i.e. destination
+            to origin), i.e. it makes sense to offer a 'Reverse' button in a fares
+            lookup user interface.
+        valid_date:
+          $ref: '#/components/schemas/valid_date'
+        valid_until_date:
+          $ref: '#/components/schemas/valid_until_date'
+    expert_flow:
+      type: object
+      title: Flow (Expert Query)
+      description: _Flow_, i.e. a set of point-to-point fares between two locations
+        (not necessarily physical stations), as it is defined in the fares database
+      properties:
+        flow_orig:
+          allOf:
+            - $ref: '#/components/schemas/detailed_location'
+          description: Flow Origin
+        flow_dest:
+          allOf:
+            - $ref: '#/components/schemas/detailed_location'
+          description: Flow Destination
+        group_orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: If the fare origin is a fares group, details of that location
+        group_dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: If the fare destination is a fares group, details of that location
+        travelcard_orig:
+          $ref: '#/components/schemas/travelcard_orig'
+        travelcard_dest:
+          $ref: '#/components/schemas/travelcard_dest'
+        zonal_orig:
+          $ref: '#/components/schemas/zonal_orig'
+        zonal_dest:
+          $ref: '#/components/schemas/zonal_dest'
+        multis:
+          type: array
+          title: Multi-fare Groups
+          description: A set of fares sharing certain characteristics
+          items:
+            $ref: '#/components/schemas/expert_multi'
+    expert_multi:
+      type: object
+      title: Multi-fare Group (Expert Query)
+      description: This is a set of fares within a flow which share the same route
+        restriction, London code and fare setter
+      properties:
+        fare_setter:
+          $ref: '#/components/schemas/fare_setter'
+        route:
+          $ref: '#/components/schemas/route'
+        london_code:
+          $ref: '#/components/schemas/london_code'
+        overridden:
+          type: boolean
+          description: This multi-group has been overridden by another and none of
+            the fares in it should be made available for sale
+        fares:
+          type: array
+          title: Fares
+          description: List of individual fares in this group
+          items:
+            $ref: '#/components/schemas/expert_fare'
+    expert_fare:
+      type: object
+      title: Fare (Expert Query)
+      properties:
+        category:
+          $ref: '#/components/schemas/fare_category'
+        ticket:
+          $ref: '#/components/schemas/ticket'
+        fare_setter_uncertain:
+          type: boolean
+          description: The fare setter for this particular fare is presumed to be
+            that of the containing multi-group, but it is not certain (technically,
+            this is due to the fare being input into the fare database as a non-derivable
+            fare)
+        date_validity:
+          type: array
+          title: Date-based Validity
+          description: If this list is not empty, the fare may only be sold for these
+            issue dates (with the loaded date range defined by valid_date and valid_until_date.
+          items:
+            $ref: '#/components/schemas/date_based_availability'
+        advance_booking_restrictions:
+          type: array
+          title: Advance Booking Requirements
+          description: Advance booking requirement(s) applying to sale of this fare
+          items:
+            $ref: '#/components/schemas/advance_booking_requirement'
+        main_tocs:
+          type: array
+          title: TOC Restrictions
+          description: If this list is not empty, at least one journey leg must be
+            operated by an operator in this list, otherwise the fare may not be sold
+            for the itinerary
+          items:
+            $ref: '#/components/schemas/ticket_toc_restriction'
+        connecting_tocs:
+          type: array
+          title: TOC Restrictions
+          description: If this list is not empty, all journey legs not operated by
+            an operator in the main_tocs list must be on an operator in this list,
+            otherwise the fare may not be sold
+          items:
+            $ref: '#/components/schemas/ticket_toc_restriction'
+        date_restrictions:
+          type: array
+          title: Banned Dates
+          description: Travel dates for which ticket may not be issued
+          items:
+            $ref: '#/components/schemas/date_period'
+        restriction_code:
+          $ref: '#/components/schemas/restriction_code'
+        railcard_restriction_codes:
+          type: array
+          title: Restriction Codes
+          description: Additional restriction codes that apply to this fare by virtue
+            of the railcard used
+          items:
+            $ref: '#/components/schemas/restriction_code'
+        reversible:
+          type: boolean
+          description: Fare exists in reverse direction (i.e. destination to origin)
+            with exact same price and restrictions
+        overridden:
+          type: boolean
+          description: Fare has been overridden by another (in a different multi-group)
+            and should not be offered for sale
+        adult:
+          $ref: '#/components/schemas/status_price'
+        child:
+          $ref: '#/components/schemas/status_price'
+    extra_response:
+      type: object
+      title: Extra Fare Query Response
+      required:
+        - correct
+      properties:
+        correct:
+          $ref: '#/components/schemas/correct'
+        orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Origin Location
+        dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Destination Location
+        travelcard_orig:
+          $ref: '#/components/schemas/travelcard_orig'
+        travelcard_dest:
+          $ref: '#/components/schemas/travelcard_dest'
+        zonal_orig:
+          $ref: '#/components/schemas/zonal_orig'
+        zonal_dest:
+          $ref: '#/components/schemas/zonal_dest'
+        railcard:
+          $ref: '#/components/schemas/railcard'
+        railcard_valid:
+          $ref: '#/components/schemas/railcard_valid'
+        fares:
+          type: array
+          title: Fares
+          description: List of all fares available between origin and destination
+          items:
+            $ref: '#/components/schemas/extra_fare'
+        source:
+          $ref: '#/components/schemas/data_source'
+        reversible:
+          type: boolean
+          description: At least one fare exists in the reverse direction (i.e. destination
+            to origin), i.e. it makes sense to offer a 'Reverse' button in a fares
+            lookup user interface.
+        valid_date:
+          $ref: '#/components/schemas/valid_date'
+        valid_until_date:
+          $ref: '#/components/schemas/valid_until_date'
+    extra_fare:
+      type: object
+      title: Fare (Extra Query)
+      description: An individual fare in an extra query response
+      properties:
+        category:
+          $ref: '#/components/schemas/fare_category'
+        group_orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: If the fare origin is a fares group, details of that location
+        group_dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: If the fare destination is a fares group, details of that location
+        travelcard_orig:
+          $ref: '#/components/schemas/travelcard_orig'
+        travelcard_dest:
+          $ref: '#/components/schemas/travelcard_dest'
+        rzones:
+          type: integer
+          description: If travelcard_orig or travelcard_dest is true, indicates the
+            zones covered by Travelcard validity. Binary bitmask (Bit 0 = Zone 1,
+            Bit 1 = Zone 2 etc.) as decimal integer. E.g. 63 = 0x3f = 0b00111111 =
+            Zones 1-6.
+        zonal_orig:
+          $ref: '#/components/schemas/zonal_orig'
+        zonal_dest:
+          $ref: '#/components/schemas/zonal_dest'
+        uzones:
+          type: integer
+          description: If zonal_orig or zonal_dest is true, indicates the zones in
+            which an Underground/DLR (or interavailable National Rail) journey may
+            be made. Binary bitmask (see rzones above for description).
+        fare_setter:
+          $ref: '#/components/schemas/fare_setter'
+        fare_setter_uncertain:
+          type: boolean
+          description: The fare setter for this particular fare is presumed to be
+            that of the containing multi-group, but it is not certain (technically,
+            this is due to the fare being input into the fare database as a non-derivable
+            fare)
+        route:
+          $ref: '#/components/schemas/route'
+        london_code:
+          $ref: '#/components/schemas/london_code'
+        ticket:
+          $ref: '#/components/schemas/ticket'
+        date_validity:
+          type: array
+          title: Date-based Validity
+          description: If this list is not empty, the fare may only be sold for these
+            issue dates (with the loaded date range defined by valid_date and valid_until_date.
+          items:
+            $ref: '#/components/schemas/date_based_availability'
+        advance_booking_restrictions:
+          type: array
+          title: Advance Booking Requirements
+          description: Advance booking requirement(s) applying to sale of this fare
+          items:
+            $ref: '#/components/schemas/advance_booking_requirement'
+        main_tocs:
+          type: array
+          title: TOC Restrictions
+          description: If this list is not empty, at least one journey leg must be
+            operated by an operator in this list, otherwise the fare may not be sold
+            for the itinerary
+          items:
+            $ref: '#/components/schemas/ticket_toc_restriction'
+        connecting_tocs:
+          type: array
+          title: TOC Restrictions
+          description: If this list is not empty, all journey legs not operated by
+            an operator in the main_tocs list must be on an operator in this list,
+            otherwise the fare may not be sold
+          items:
+            $ref: '#/components/schemas/ticket_toc_restriction'
+        date_restrictions:
+          type: array
+          title: Banned Dates
+          description: Travel dates for which ticket may not be issued
+          items:
+            $ref: '#/components/schemas/date_period'
+        restriction:
+          $ref: '#/components/schemas/electronic_restriction'
+        railcard_restrictions:
+          type: array
+          title: Restriction Codes
+          description: Additional restrictions that apply to this fare by virtue of
+            the railcard used
+          items:
+            $ref: '#/components/schemas/electronic_restriction'
+        reversible:
+          type: boolean
+          description: Fare exists in reverse direction (i.e. destination to origin)
+            with exact same price and restrictions
+        overridden:
+          type: boolean
+          description: Fare has been overridden by another and should not be offered
+            for sale
+        adult:
+          $ref: '#/components/schemas/status_price'
+        child:
+          $ref: '#/components/schemas/status_price'
+    rover_response:
+      type: object
+      title: Rover/Ranger Query Response
+      description: Group of related rovers/rangers
+      properties:
+        correct:
+          type: object
+          title: Rover Parameter Validation
+          description: Indicates whether each of the supplied parameters could be
+            parsed and resolved to a rover group or railcard as appropriate
+          properties:
+            nlc:
+              type: boolean
+              description: Rover/ranger group correctly resolved
+            rlc:
+              type: boolean
+              description: Railcard/Discount correctly resolved
+        rover_nlc:
+          type: object
+          title: Rover Group
+          description: Rover Group Name and Code
+          properties:
+            name:
+              type: string
+              description: Short name of rover group
+              minLength: 0
+              maxLength: 16
+            longname:
+              type: string
+              description: Long name of rover group
+              minLength: 0
+              maxLength: 30
+            code:
+              $ref: '#/components/schemas/nlc'
+        railcard:
+          $ref: '#/components/schemas/railcard'
+        fares:
+          type: array
+          title: Rovers
+          description: List of all individual rovers/rangers in this group
+          items:
+            $ref: '#/components/schemas/rover_fare'
+        valid_date:
+          $ref: '#/components/schemas/valid_date'
+        valid_until_date:
+          $ref: '#/components/schemas/valid_until_date'
+    rover_fare:
+      type: object
+      title: Individual Fare (Rover/Ranger)
+      description: An individual Rover or Ranger
+      properties:
+        rover:
+          type: object
+          title: Basic Rover Information
+          description: Specific details of individual rover
+          properties:
+            code:
+              type: string
+              description: Rover code
+              minLength: 3
+              maxLength: 3
+              pattern: ^[A-Z0-9]{3}$
+            name:
+              type: string
+              description: Rover name (as printed on the ticket)
+              minLength: 0
+              maxLength: 30
+            title:
+              type: string
+              description: Rover title (as printed on the ticket bottom margin)
+              minLength: 0
+              maxLength: 15
+            capri_code:
+              type: string
+              description: Rover CAPRI code (used for accounting/sales reports)
+              minLength: 3
+              maxLength: 3
+              pattern: ^[A-Z0-9]{3}$
+            valid:
+              type: integer
+              description: Validity Period, i.e. number of consecutive days over which
+                this rover is valid
+            travel:
+              type: integer
+              description: Number of days within the Validity Period on which the
+                rover may be used for travel
+        restriction:
+          $ref: '#/components/schemas/electronic_restriction'
+        tclass:
+          $ref: '#/components/schemas/ticket_class'
+        adult:
+          $ref: '#/components/schemas/status_price'
+        child:
+          $ref: '#/components/schemas/status_price'
+    ticket_response:
+      allOf:
+        - $ref: '#/components/schemas/ticket'
+        - type: object
+          properties:
+            group:
+              type: object
+              title: Ticket Group
+              description: Ticket Group. Don't know what this is used for.
+              properties:
+                code:
+                  type: integer
+                  description: Internal Code (0 = First, 1 = Standard, 2 = Promo,
+                    3 = Euro)
+                desc:
+                  type: string
+                  description: Group as string
+                  pattern: ^(FIRST|STANDARD|PROMO|EURO)$
+            min_pass:
+              type: integer
+              description: Minimum size of passenger group for which this ticket may
+                be issued
+            max_pass:
+              type: integer
+              description: Maximum size of passenger group for which this ticket may
+                be issued
+            min_adult:
+              type: integer
+              description: Minimum number of adults in the passenger group covered
+                by one ticket
+            max_adult:
+              type: integer
+              description: Maximum number of adults in the passenger group covered
+                by one ticket
+            min_child:
+              type: integer
+              description: Minimum number of children in the passenger group covered
+                by one ticket
+            max_child:
+              type: integer
+              description: Maximum number of children in the passenger group covered
+                by one ticket
+            capri_code:
+              type: string
+              description: CAPRI code under which accounting/sales reports are logged
+                for this ticket
+              minLength: 3
+              maxLength: 3
+              pattern: ^[A-Z0-9]{3}$
+            discount_category:
+              type: integer
+              description: Discount Category indicating the set of railcard discounting
+                rules applying to this ticket (N.B. these are not exposed in the API
+                but are calculated automatically)
+              minimum: 0
+              maximum: 19
+      title: Ticket Details Response
+      description: Ticket type and parameters, with extended information on passenger
+        group size and other parameters
+    restriction_response:
+      type: array
+      title: Restriction Response
+      description: Full details of restrictions in various human-readable and machine-readable
+        formats
+      items:
+        $ref: '#/components/schemas/restriction_details'
+    restriction_details:
+      type: object
+      title: Restriction Details
+      properties:
+        restriction_code:
+          $ref: '#/components/schemas/restriction_code'
+        code_valid:
+          type: boolean
+          description: Indicates whether the restriction code exists in the database
+            with valid data available (very occasionally this is not the case due
+            to lack of referential integrity)
+        specific_text:
+          type: string
+          description: Plain text description of restrictions, in narrow columns with
+            line breaks. Not well-maintained and may be out-of-date.
+        nre:
+          $ref: '#/components/schemas/nre_restriction'
+        electronic:
+          $ref: '#/components/schemas/detailed_electronic_restriction'
+      required:
+        - code_valid
+        - restriction_code
+    nre_restriction:
+      type: object
+      title: Restriction Details (National Rail Enquiries)
+      description: Detailed human-readable restriction information as provided by
+        National Rail Enquiries. Attribution requirement may apply to republishing
+        of this data.
+      properties:
+        code:
+          $ref: '#/components/schemas/restriction_code'
+        boj:
+          type: boolean
+          description: Break of journey is NOT permitted on the outward journey (determined
+            by parsing text)
+        restr_days:
+          type: string
+          description: HTML describing the days on which the restriction applies
+        easements:
+          type: string
+          description: HTML text to be displayed under an 'Easements' heading
+        seasonal:
+          type: string
+          description: HTML text to be displayed under a 'Seasonal Variations' heading
+        notes:
+          type: string
+          description: HTML text to be displayed under a 'Notes' heading
+        text:
+          type: array
+          title: Core Restriction Text
+          description: Core text of the description, optionally grouped into two sets
+          items:
+            type: object
+            title: Restriction Set
+            description: Grouped set of restrictions
+            properties:
+              desc:
+                type: string
+                description: HTML title of this set, e.g. 'Outbound' or 'Towards London'
+              hdr:
+                type: string
+                description: Optional header line to display under title (HTML)
+              details:
+                type: string
+                description: HTML describing full details of this restriction set
+          minItems: 0
+          maxItems: 2
+    detailed_electronic_restriction:
+      type: object
+      title: Time/Train Restrictions
+      description: Detailed information on any time-based and train-based restrictions
+      properties:
+        code:
+          $ref: '#/components/schemas/restriction_code'
+        desc:
+          type: string
+          description: Summary of this set of restrictions. Not public-facing.
+          minLength: 0
+          maxLength: 30
+        nfm_from_date:
+          type: integer
+          description: Start date (inclusive) of National Fares Manual period with
+            which these restrictions are associated (YYYYMMDD format)
+        nfm_until_date:
+          type: integer
+          description: End date (inclusive) of National Fares Manual period with which
+            these restrictions are associated (YYYYMMDD format)
+        date_easements:
+          type: array
+          title: Restricted Travel Dates
+          description: Inverse of the travel dates on which the restriction applies.
+            N.B. confusing nomenclature due to a historical misunderstanding. For
+            the periods listed here, the restriction applies on any days for which
+            the day bit is zero. It does NOT apply during any period not listed here.
+          items:
+            $ref: '#/components/schemas/date_period'
+        out:
+          allOf:
+            - $ref: '#/components/schemas/electronic_restriction_journey'
+          description: Time and train restrictions applying to outward journey
+        rtn:
+          allOf:
+            - $ref: '#/components/schemas/electronic_restriction_journey'
+          description: Time and train restrictions applying to return journey (not
+            applicable to single fares)
+    electronic_restriction_journey:
+      type: object
+      title: Electronic Restrictions (per journey)
+      properties:
+        desc:
+          type: string
+          description: Short summary of restrictions applying to this journey
+          minLength: 0
+          maxLength: 50
+        change_prohibited:
+          type: boolean
+          description: Change of train is not permitted
+        time_restrictions:
+          type: array
+          title: Time Restrictions
+          description: Restriction applies if any of these time restrictions match
+            the journey
+          items:
+            $ref: '#/components/schemas/time_restriction_item'
+        train_easements:
+          type: array
+          title: Train-based Easements
+          description: Restriction does NOT apply if any of the journey legs are made
+            on one of these services
+          items:
+            $ref: '#/components/schemas/train_restriction_item'
+        train_restrictions:
+          type: array
+          title: Train-based Restrictions
+          description: Restriction applies if any of the journey legs are made on
+            one of these services
+          items:
+            $ref: '#/components/schemas/train_restriction_item'
+      required:
+        - change_prohibited
+        - desc
+        - time_restrictions
+    time_restriction_item:
+      type: object
+      title: Individual Time Restriction
+      properties:
+        from_date:
+          type: integer
+          description: Start date (inclusive) of period when this restriction applies
+            (YYYYMMDD format, within the period when the entire electronic restrictions
+            apply)
+        until_date:
+          type: integer
+          description: End date (inclusive) of period when this restriction applies
+            (YYYYMMDD format, within the period when the entire electronic restrictions
+            apply)
+        days:
+          type: integer
+          description: Days of the week within period for which the restriction or
+            applies; must be qualified by the dates/days when the entire electronic
+            restrictions apply. Binary bitmask (Bit 0 = Sunday, Bit 1 = Monday etc.)
+            as decimal integer. E.g. 127 = 0x7f = 0b01111111 = Applies every day.
+          minimum: 0
+          maximum: 127
+        minimum_fare_applies:
+          type: boolean
+          description: If this restriction item matches the journey it indicates not
+            that the journey is not permitted on the fare, but rather that the minimum
+            price for the relative ticket type and railcard combination (if specified)
+            applies.
+        arrival_restriction:
+          type: boolean
+          description: The time band in the restriction refers to arrival at the end
+            of each journey leg, or to arrival at the overall destination of the train
+            used on any leg. If not set, the time band in the restriction refers to
+            departure of each journey leg only.
+        location:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Location to which restriction time band applies; nlc will be
+            set to '----' if time restriction applies to any location
+        from_time:
+          type: integer
+          description: Start time (inclusive) of restricted time band, in half-minutes
+            since midnight (e.g. 2 = 00:01, 2878 = 23:59).
+          minimum: 0
+          maximum: 2880
+        until_time:
+          type: integer
+          description: End time (inclusive) of restricted time band, in half-minutes
+            since midnight (e.g. 2 = 00:01, 2878 = 23:59).
+          minimum: 0
+          maximum: 2880
+        toc:
+          allOf:
+            - $ref: '#/components/schemas/toc'
+          description: Operator to which restriction time band applies; code will
+            be set to '--' if time restriction applies to any operator
+    train_restriction_item:
+      type: object
+      title: Individual Train-based Restriction or Easement
+      properties:
+        from_date:
+          type: integer
+          description: Start date (inclusive) of period when this train runs (YYYYMMDD
+            format, within the period when the entire electronic restrictions apply)
+        until_date:
+          type: integer
+          description: End date (inclusive) of period when this train runs (YYYYMMDD
+            format, within the period when the entire electronic restrictions apply)
+        days:
+          type: integer
+          description: Days of the week within period for which train runs; must be
+            qualified by the dates/days when the entire electronic restrictions apply.
+            Binary bitmask (Bit 0 = Sunday, Bit 1 = Monday etc.) as decimal integer.
+            E.g. 65 = 0x41 = 0b01000001 = Applies Sat+Sun.
+          minimum: 0
+          maximum: 127
+        departure:
+          type: integer
+          description: Departure time of the train from its origin, in half-minutes
+            since midnight (e.g. 2 = 00:01, 2878 = 23:59).
+          minimum: 0
+          maximum: 2880
+        orig:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Train Origin
+        dest:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          description: Train Destination
+        toc:
+          $ref: '#/components/schemas/toc'
+        retail_id:
+          type: string
+          title: Retail ID
+          description: Retail Service ID of the train
+          minLength: 6
+          maxLength: 6
+          pattern: ^[A-Z]{2}[0-9]{4}$
+        uid:
+          type: string
+          title: Timetable UID
+          description: Timetable UID of the train
+          minLength: 6
+          maxLength: 6
+          pattern: ^[A-Z][0-9]{5}$
+        exceptions:
+          type: array
+          title: Exception Stations
+          description: Exceptions to this train-based easement or restriction. The
+            easement or restriction does not apply if the journey leg involves boarding
+            and/or alighting (as indicated) at one of these stations
+          items:
+            type: object
+            title: Individual Exception
+            properties:
+              boarding:
+                type: boolean
+                description: Exception applies if leg starts at this station
+              alighting:
+                type: boolean
+                description: Exception applies if leg ends at this station
+              location:
+                allOf:
+                  - $ref: '#/components/schemas/location'
+                description: Exception Station
+    correct:
+      type: object
+      title: Parameter Validation
+      description: Indicates whether each of the supplied parameters could be parsed
+        and resolved to a location or railcard as appropriate
+      properties:
+        orig:
+          type: boolean
+          description: Origin Location correctly resolved
+        dest:
+          type: boolean
+          description: Destination Location correctly resolved
+        rlc:
+          type: boolean
+          description: Railcard/Discount correctly resolved
+    detailed_location:
+      type: object
+      title: Location (Detailed)
+      properties:
+        nlc:
+          $ref: '#/components/schemas/nlc'
+        crs:
+          $ref: '#/components/schemas/crs_code'
+        name:
+          $ref: '#/components/schemas/loc_name'
+        longname:
+          $ref: '#/components/schemas/loc_longname'
+        ticketname:
+          $ref: '#/components/schemas/loc_ticketname'
+        code:
+          $ref: '#/components/schemas/loc_code'
+        fares_group:
+          type: boolean
+          description: Location is a fares group, i.e. a common location covering
+            multiple physical stations which have been grouped together for fares
+            purposes. Tickets are issued from/to the group, and may offer greater
+            flexibility (in terms of available routes) than tickets issued to a single
+            physical station within the group. **members** contains a list of stations
+            within the group.
+        cluster:
+          type: boolean
+          description: Location is a cluster, i.e. a common location grouping multiple
+            other locations (which themselves may be physical stations, fares group
+            or counties), grouped together for ease of administration of the fares
+            database. Tickets are still issued to/from the individual station or ares
+            group. **members** contains a list of locations within the cluster.
+        county:
+          type: boolean
+          description: Location is a county, i.e. a pseudo-location which covers all
+            locations in a given county. The format of the NLC is **CCxx**, where
+            *xx* is a 2-digit numeric code representing an individual county. **members**
+            contains a list of locations within the county.
+        members:
+          type: array
+          title: Member Locations
+          description: If the location is a fares group, cluster or county, this is
+            a list of all member locations.
+          items:
+            $ref: '#/components/schemas/location'
+    location:
+      type: object
+      title: Location
+      properties:
+        nlc:
+          $ref: '#/components/schemas/nlc'
+        crs:
+          $ref: '#/components/schemas/crs_code'
+        name:
+          $ref: '#/components/schemas/loc_name'
+        longname:
+          $ref: '#/components/schemas/loc_longname'
+        ticketname:
+          $ref: '#/components/schemas/loc_ticketname'
+        code:
+          $ref: '#/components/schemas/loc_code'
+    nlc:
+      type: string
+      title: National Location Code
+      description: National Location Code. Unique key which identifies a location
+        in the fares database.
+      minLength: 4
+      maxLength: 4
+      pattern: ^----|[0-9A-Z][0-9]{3}$
+    crs_code:
+      type: string
+      title: CRS Code
+      description: Computer Reservation System (CRS) Code, if it exists. Generally
+        assigned to locations that correspond 1:1 to physical stations, used to link
+        timetables and fares.
+      minLength: 0
+      maxLength: 3
+      pattern: ^|---|[A-Z0-9]{3}$
+    loc_name:
+      type: string
+      title: Location Short Name
+      description: Short name within the fares database. Not generally public-facing.
+      minLength: 0
+      maxLength: 16
+    loc_longname:
+      type: string
+      title: Location Long Name
+      description: Longer name, can be displayed when space constraints are not an
+        issue.
+      minLength: 0
+      maxLength: 30
+    loc_ticketname:
+      type: string
+      title: Location Ticket Name
+      description: Short name, printed on old-style tickets etc.
+      minLength: 0
+      maxLength: 16
+    loc_code:
+      type: string
+      title: Canonical Location Code
+      minLength: 3
+      maxLength: 4
+      description: Canonical code to describe this location, e.g. in public-facing
+        URLs. Generally will consist of the CRS code if available and unique, otherwise
+        NLC.
+    railcard:
+      type: object
+      title: Railcard
+      description: A railcard or discount entitlement, which may be used to discount
+        the fares of all passengers in a passenger group
+      properties:
+        code:
+          $ref: '#/components/schemas/rlc_code'
+        name:
+          type: string
+          description: Railcard Name
+          minLength: 0
+          maxLength: 20
+        physical_card:
+          type: boolean
+          description: Discount entitlement is evidenced by a (physical) railcard
+        geographically_restricted:
+          type: boolean
+          description: Discount only available between stations in a restricted geographical
+            area
+        restricted_issue:
+          type: boolean
+          description: Railcard has entitlement criteria which must be checked before
+            issuing a railcard
+        must_be_shown:
+          type: boolean
+          description: Railcard must be shown when purchasing discounted tickets in
+            person
+        holder:
+          type: string
+          description: Indicates whether the railcard may be held by either an Adult
+            (16+) or a child
+          pattern: ^(ADULT|CHILD)$
+        min_pass:
+          type: integer
+          description: Minimum size of passenger group that may be discounted
+        max_pass:
+          type: integer
+          description: Maximum size of passenger group that may be discounted
+        min_holder:
+          type: integer
+          description: Minimum number of named holders in the passenger group
+        max_holder:
+          type: integer
+          description: Maximum number of named holders in the passenger group (N.B.
+            some railcards may have more than one named holder)
+        min_accomp_adult:
+          type: integer
+          description: Minimum number of accompanying (non-holder) adults in the passenger
+            group
+        max_accomp_adult:
+          type: integer
+          description: Maximum number of accompanying (non-holder) adults in the passenger
+            group
+        min_adult:
+          type: integer
+          description: Overall minimum number of adults in the passenger group
+        max_adult:
+          type: integer
+          description: Overall maximum number of adults in the passenger group
+        min_child:
+          type: integer
+          description: Overall minimum number of children in the passenger group
+        max_child:
+          type: integer
+          description: Overall maximum number of children in the passenger group
+        price:
+          type: integer
+          description: Price of the railcard in pence
+        discount_price:
+          type: integer
+          description: Price of the railcard in pence, when purchased with a promotional
+            discount
+        validity:
+          type: integer
+          description: Validity period of the railcard/discount in the form (_months_
+            × 1000) + _days_
+    rlc_code:
+      type: string
+      title: Railcard Code
+      description: Railcard Code. Unique key which identifies a railcard (or other
+        discount entitlement) in the fares database.
+      minLength: 3
+      maxLength: 3
+      pattern: ^[ 0-9A-Z]{3}$
+    route:
+      type: object
+      title: Route Restriction
+      properties:
+        code:
+          $ref: '#/components/schemas/rte_code'
+        name:
+          $ref: '#/components/schemas/rte_name'
+        longname:
+          $ref: '#/components/schemas/rte_longname'
+        ticketname:
+          $ref: '#/components/schemas/rte_ticketname'
+    rte_code:
+      type: integer
+      title: Route Code
+      description: Numerical code uniquely referencing this route restriction.
+    rte_name:
+      type: string
+      title: Route Short Name
+      description: Short name within the fares database. Not generally public-facing.
+      minLength: 0
+      maxLength: 16
+    rte_longname:
+      type: string
+      title: Route Long Name
+      description: Longer name, can be displayed when space constraints are not an
+        issue. May contain up to 4 lines, separated by newline characters.
+      minLength: 0
+      maxLength: 143
+    rte_ticketname:
+      type: string
+      title: Route Ticket Name
+      description: Short name, printed on old-style tickets etc.
+      minLength: 0
+      maxLength: 16
+    london_code:
+      type: object
+      title: London Code
+      description: Code describing this fare's availability for cross-London journeys
+        between National Rail terminals. If *code* is 1 then a Maltese Cross ✠ is
+        printed on the ticket and it will operate London Underground barriers.
+      properties:
+        code:
+          type: integer
+          description: Cross-London status as code code (0 = Not valid via London,
+            1 = Yes, Underground/DLR journey included, 2 = via London but Underground
+            not included, 3 = via London on Thameslink only).
+        desc:
+          type: string
+          description: Cross-London status as string
+          pattern: ^(NO|YES|NOT UNDERGROUND|THAMESLINK)$
+    fare_category:
+      type: object
+      title: Fare Category
+      description: Broad categorisation of type of fare into train-specific fares,
+        flexible fares, and others
+      properties:
+        code:
+          type: integer
+          description: Fare Category Code (0 = flexible, 1 = train-specific, 2 = other)
+          minimum: 0
+          maximum: 2
+        name:
+          type: string
+          description: String description of fare category
+          pattern: ^(WALKUP|QUOTA|OTHER)$
+    ticket:
+      type: object
+      title: Ticket Type
+      description: Ticket type, and various parameters that depend on it
+      properties:
+        code:
+          type: string
+          description: Ticket code
+          minLength: 3
+          maxLength: 3
+          pattern: ^[0-9A-Z]{3}$
+        name:
+          type: string
+          description: Ticket name, printed on tickets etc.
+          minLength: 0
+          maxLength: 15
+        longname:
+          type: string
+          description: Longer ticket name, can be displayed when there are fewer space
+            constraints
+          minLength: 0
+          maxLength: 20
+        type:
+          type: object
+          title: Type of Ticket
+          properties:
+            code:
+              type: integer
+              description: Internal Code (0 = single, 1 = return, 2 = season)
+              minimum: 0
+              maximum: 2
+            desc:
+              type: string
+              description: Type as string
+              pattern: ^(SINGLE|RETURN|SEASON)$
+        tclass:
+          $ref: '#/components/schemas/ticket_class'
+        validity:
+          $ref: '#/components/schemas/validity'
+        min_validity:
+          type: integer
+          description: For season tickets only, minimum validity period in the form
+            (_months_ × 1000) + _days_. Originally from the fares mainframe, no longer
+            reliably populated.
+        max_validity:
+          type: integer
+          description: For season tickets only, maximum validity period in the form
+            (_months_ × 1000) + _days_. Originally from the fares mainframe, no longer
+            reliably populated.
+        restr_date:
+          type: boolean
+          description: May indicate that ticket has date-based availability restrictions.
+            May not be accurate.
+        restr_train:
+          type: boolean
+          description: May indicate that ticket has TOC (operator)-based availability
+            restrictions. May not be accurate.
+        restr_area:
+          type: boolean
+          description: May indicate that ticket has restrictions on which route codes
+            it may be used in combination with. Probably not accurate.
+        reservations:
+          $ref: '#/components/schemas/ticket_reservations'
+    ticket_class:
+      type: object
+      title: Accommodation Class
+      description: Accommodation class of ticket
+      properties:
+        code:
+          type: integer
+          description: Internal code (0 = 1st Class, 1 = Standard, 2 = Classless)
+        desc:
+          type: string
+          description: Ticket class as string
+          minLength: 3
+          maxLength: 3
+          pattern: ^1ST|STD| - $
+    validity:
+      type: object
+      title: Ticket Validity
+      description: Ticket Validity, i.e. period within which ticket is valid to make
+        a journey
+      properties:
+        code:
+          type: integer
+          description: Internal fares database code for this set of validity information
+          minimum: 0
+          maximum: 99
+        desc:
+          type: string
+          description: Validity information relating to entire journey
+          minLength: 0
+          maxLength: 20
+        out:
+          type: string
+          description: Short summary of validity period for outward journey
+          minLength: 0
+          maxLength: 15
+        rtn:
+          type: string
+          description: Short summary of validity period for return journey
+          minLength: 0
+          maxLength: 15
+        out_boj:
+          type: boolean
+          description: Outward journey may be broken at an intermediate station
+        rtn_boj:
+          type: boolean
+          description: Return journey may be broken at an intermediate station
+        out_validity:
+          type: integer
+          description: Period available (from the ticket date, inclusive) to make
+            the outward journey in form (_months_ × 1000) + _days_
+        rtn_validity:
+          type: integer
+          description: Period available (from the ticket date, inclusive) to make
+            the return journey in form (_months_ × 1000) + _days_
+        min_stay:
+          type: integer
+          description: Number of midnights that must pass between the outward and
+            return journeys
+        rtn_after:
+          type: integer
+          description: Day of week that must pass (starting from the ticket date,
+            inclusive), before the return journey can be made. 0 = Sunday, 1 = Monday
+            etc. -1 if this restriction does not apply.
+          minimum: -1
+          maximum: 6
+    electronic_restriction:
+      type: object
+      title: Time/Train Restrictions
+      description: Time-based or train-based restrictions, limiting the trains on
+        which this fare may be used (within its validity period)
+      properties:
+        code:
+          $ref: '#/components/schemas/restriction_code'
+        code_valid:
+          type: boolean
+          description: Indicates whether the restriction code exists in the database
+            with valid data available (very occasionally this is not the case due
+            to lack of referential integrity)
+        desc:
+          type: string
+          description: Summary of this set of restrictions. Not public-facing.
+          minLength: 0
+          maxLength: 30
+        out:
+          type: string
+          description: Short summary of restrictions applying to the outward journey
+          minLength: 0
+          maxLength: 50
+        rtn:
+          type: string
+          description: Short summary of restrictions applying to the return journey
+          minLength: 0
+          maxLength: 50
+    restriction_code:
+      type: string
+      title: Restriction Code
+      description: 2-character restriction code identifying this set of restrictions
+      minLength: 2
+      maxLength: 2
+      pattern: ^[ A-Z0-9]{2}$
+    fare_setter:
+      type: object
+      title: Fare Setter
+      description: Train operator, public transport authority or other body responsible
+        for setting and maintaining this fare
+      properties:
+        code:
+          type: string
+          description: Fare Setter Code
+          pattern: ^[A-Z]{3}$
+        name:
+          type: string
+          description: Fare Setter Name
+          minLength: 0
+          maxLength: 30
+    status_price:
+      type: object
+      title: Fare Status and Price
+      description: Fare status and price (N.B. may be an empty object in the event
+        that a price is not available for the relevant passenger type)
+      required:
+        - fare
+        - status
+      properties:
+        status:
+          type: object
+          title: Passenger Status
+          description: Passenger status, derived from passenger type (Adult/Child/AAA)
+            in combination with railcard or discount
+          properties:
+            code:
+              type: string
+              description: Status code (used for accounting/sales reports)
+              minLength: 3
+              maxLength: 3
+              pattern: ^[0-9A-Z]{3}$
+            name:
+              type: string
+              description: Status name within the fares mainframe. No longer reliably
+                populated.
+              minLength: 0
+              maxLength: 20
+            ticket_code:
+              type: string
+              description: Status ticket code, shown on tickets
+              minLength: 0
+              maxLength: 5
+        fare:
+          type: integer
+          description: Price of the fare in pence
+        min_fare:
+          type: integer
+          description: Minimum price of the fare (in pence), which may apply at certain
+            times as determined by any restriction codes
+    date_based_availability:
+      type: object
+      title: Date-based Availability
+      properties:
+        from:
+          type: integer
+          description: Start date (inclusive) of period for which fare may be sold
+            (YYYYMMDD format)
+        to:
+          type: integer
+          description: End date (inclusive) of period for which fare may be sold (YYYYMMDD
+            format)
+    advance_booking_requirement:
+      type: object
+      title: Advance Booking Requirement
+      description: Booking deadline that applies to sales of this fare (if a TOC
+        requirement is specified, only if that TOC will be used in the journey)
+      required:
+        - deadline_type
+        - deadline
+      properties:
+        toc:
+          allOf:
+            - $ref: '#/components/schemas/toc'
+          description: Requirement applies only to journey legs operated by this operator.
+            If this is an empty object, requirement applies to all legs.
+        deadline_type:
+          type: object
+          title: Deadline Type
+          description: Describes how booking deadline is specified (days/hours etc.)
+          properties:
+            code:
+              type: integer
+              description: Internal code for deadline type (1 = specific date, 2 =
+                number of hours in advance of travel, 3 = number of days in advance
+                of travel)
+              minimum: 1
+              maximum: 3
+            desc:
+              type: string
+              description: String description of deadline type
+              pattern: ^DATE|HOURS|DAYS$
+        deadline:
+          type: integer
+          description: Numerical deadline value. Will either be a date in YYYYMMDD
+            format, a number of hours or a number of days, depending on deadline_type.
+        latest_time:
+          type: integer
+          description: Latest time by which ticket may be booked on the deadline day,
+            in half-minutes since midnight (e.g. 2160 = 18:00, 2878 = 23:59).
+          minimum: 0
+          maximum: 2880
+    ticket_toc_restriction:
+      type: object
+      title: Ticket-based TOC Restriction
+      properties:
+        toc:
+          allOf:
+            - $ref: '#/components/schemas/toc'
+          description: Journey itinerary must include at least one service operated
+            by this operator, in order to satisfy the critera
+        sleeper_req:
+          type: boolean
+          description: Journey itinerary must include at least one train with sleeper
+            accommodation, in order to satisfy the criteria
+    toc:
+      type: object
+      title: Train Operator
+      properties:
+        code:
+          type: string
+          description: 2-character train operator code
+          pattern: ^--|[A-Z]{2}$
+          minimum: 2
+          maximum: 2
+        name:
+          type: string
+          description: Train operator name
+          minimum: 0
+          maximum: 30
+    date_period:
+      type: object
+      title: Period during which a restriction or easement applies
+      properties:
+        from:
+          type: integer
+          description: Start date (inclusive) of period (YYYYMMDD format)
+        to:
+          type: integer
+          description: End date (inclusive) of period (YYYYMMDD format)
+        days:
+          type: integer
+          description: Days of the week within period for which the restriction or
+            easement applies. Binary bitmask (Bit 0 = Sunday, Bit 1 = Monday etc.)
+            as decimal integer. E.g. 62 = 0x3e = 0b00111110 = Applies Mon-Fri.
+          minimum: 0
+          maximum: 127
+    ticket_reservations:
+      type: object
+      title: Ticket-based Reservation Requirement
+      description: Indicates whether mandatory reservations are required to use this
+        ticket, generally used to enforce quota control of cheaper fares.
+      properties:
+        code:
+          type: integer
+          description: Internal reservations code (0 = Reservations not required,
+            1 = Required on outward leg, 2 = Required on return leg, 3 = Required
+            on both outward and return legs, 4 = Required on either outward or return
+            leg)
+        desc:
+          type: string
+          description: Reservations status as string
+          pattern: ^(NO|OUT|RETURN|BOTH|EITHER)$
+    valid_date:
+      type: integer
+      description: Prices are current as of this date (YYYYMMDD format)
+    valid_until_date:
+      type: integer
+      description: Prices are valid until this date (YYYYMMDD format)
+    travelcard_orig:
+      type: boolean
+      description: Origin is a London Travelcard location, allowing unlimited travel
+        within specified zones
+    travelcard_dest:
+      type: boolean
+      description: Destination is a London Travelcard location, allowing unlimited
+        travel within specified zones
+    zonal_orig:
+      type: boolean
+      description: Origin is a London zonal location, allowing one journey on London
+        Underground/DLR (or certain interavailable National Rail routes) within specified
+        zones
+    zonal_dest:
+      type: boolean
+      description: Destination is a London zonal location, allowing one journey on
+        London Underground/DLR (or certain interavailable National Rail routes) within
+        specified zones
+    railcard_valid:
+      type: boolean
+      description: Railcard is valid for a journey from origin to destination, taking
+        into account any geographical restrictions
+    data_source:
+      type: object
+      title: Data Source
+      description: Source of fares data. Legacy field, not relevant.
+      properties:
+        code:
+          type: integer
+          description: Internal code
+        desc:
+          type: string
+          description: Data source as string; always set to RJIS.
+          pattern: ^RJIS$
+  parameters:
+    orig:
+      in: query
+      name: orig
+      description: Origin location (NLC, CRS code or location name, case-insensitive)
+      schema:
+        type: string
+        minLength: 1
+      examples:
+        crs_code:
+          $ref: '#/components/examples/crs_code'
+        nlc:
+          $ref: '#/components/examples/nlc'
+        loc_name:
+          $ref: '#/components/examples/loc_name'
+      required: true
+    dest:
+      in: query
+      name: dest
+      description: Destination location (NLC, CRS code or location name, case-insensitive)
+      schema:
+        type: string
+        minLength: 1
+      examples:
+        crs_code:
+          $ref: '#/components/examples/crs_code'
+        nlc:
+          $ref: '#/components/examples/nlc'
+        loc_name:
+          $ref: '#/components/examples/loc_name'
+      required: true
+    rlc:
+      in: query
+      name: rlc
+      description: Railcard or Discount code or name (case-insensitive)
+      schema:
+        type: string
+        minLength: 1
+      examples:
+        rlc_code:
+          $ref: '#/components/examples/rlc_code'
+        rlc_name:
+          $ref: '#/components/examples/rlc_name'
+      required: false
+    rover_nlc:
+      in: query
+      name: nlc
+      description: Rover or Ranger (rover/ranger group NLC, individual rover/ranger
+        code, rover/ranger group or individual name, case-insensitive)
+      schema:
+        type: string
+        minLength: 1
+      examples:
+        rover_code:
+          $ref: '#/components/examples/rover_code'
+        rover_nlc:
+          $ref: '#/components/examples/rover_nlc'
+        rover_name:
+          $ref: '#/components/examples/rover_name'
+      required: true
+    term:
+      in: query
+      name: term
+      description: Search term, i.e. first few letters of item to be autocompleted,
+        case insensitive
+      schema:
+        type: string
+        minLength: 1
+      required: true
+  examples:
+    crs_code:
+      summary: CRS code
+      description: 3-character code identifying a physical station
+      value: BRI
+    nlc:
+      summary: NLC code
+      description: 4-character code identifying a fare location (may be a physical
+        station or a purely fares location, e.g. zonal location).
+      value: '0035'
+    loc_name:
+      summary: Location Name
+      description: A full or partial station name. If ambiguous, the first matching
+        location is used.
+      value: reading
+    rlc_code:
+      summary: Railcard code
+      description: 3-character code identifying a railcard or discount
+      value: YNG
+    rlc_name:
+      summary: Railcard Name
+      description: A full or partial railcard or discount name. If ambiguous, the
+        first matching name is used.
+      value: network
+    rover_code:
+      summary: Rover code
+      description: 3-character code identifying an individual rover/ranger
+      value: R07
+    rover_nlc:
+      summary: Rover Group NLC code
+      description: 4-character code identifying a group of related rovers/rangers
+      value: I367
+    rover_name:
+      summary: Rover Name
+      description: A full or partial rover/ranger name. If ambiguous, the first matching
+        rover/ranger is used.
+      value: thames branches
+tags:
+  - name: Fares Lookup
+    description: Search for fares with basic or detailed information in the response,
+      or search for rovers/rangers
+  - name: Detailed Information
+    description: Specific information on various elements of a fare, e.g. ticket types
+      and time restrictions
+  - name: Autocomplete Suggestions
+    description: Used to suggest matching locations, railcards or rovers/rangers when
+      a user types a few letters
+paths:
+  /legacy_querysimple:
+    summary: Simple fare query
+    description: Fare query with basic information
+    get:
+      operationId: query_simple
+      summary: Fare query with basic information
+      description: Fare query with basic information
+      tags:
+        - Fares Lookup
+      parameters:
+        - $ref: '#/components/parameters/orig'
+        - $ref: '#/components/parameters/dest'
+        - $ref: '#/components/parameters/rlc'
+      responses:
+        '200':
+          description: Simple fare query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_response'
+  /legacy_queryexpert:
+    summary: Expert fare query
+    description: Fare query with detailed information on cluster and group structure
+    get:
+      operationId: query_expert
+      summary: Fare query with detailed information on cluster and group structure
+      description: Fare query with detailed information on cluster and group structure
+      tags:
+        - Fares Lookup
+      parameters:
+        - $ref: '#/components/parameters/orig'
+        - $ref: '#/components/parameters/dest'
+        - $ref: '#/components/parameters/rlc'
+      responses:
+        '200':
+          description: Expert fare query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/expert_response'
+  /legacy_queryextra:
+    summary: Extra fare query
+    description: Fare query with extra information included such as ticket-based TOC
+      restrictions
+    get:
+      operationId: query_extra
+      summary: Fare query with extra information included such as ticket-based TOC
+        restrictions
+      description: Fare query with extra information included such as ticket-based
+        TOC restrictions
+      tags:
+        - Fares Lookup
+      parameters:
+        - $ref: '#/components/parameters/orig'
+        - $ref: '#/components/parameters/dest'
+        - $ref: '#/components/parameters/rlc'
+      responses:
+        '200':
+          description: Extra fare query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra_response'
+  /legacy_queryrover:
+    summary: Rover query
+    description: Query for rover or ranger fares
+    get:
+      operationId: query_rover
+      summary: Query for rover or ranger (multi-journey) fares
+      description: Query for rover or ranger fares, which are valid for unlimited
+        journeys within a defined area, during a specific validity period.
+      tags:
+        - Fares Lookup
+      parameters:
+        - $ref: '#/components/parameters/rover_nlc'
+        - $ref: '#/components/parameters/rlc'
+      responses:
+        '200':
+          description: Rover query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rover_response'
+  /legacy_railcard:
+    summary: Railcard Details
+    description: Detailed information on a railcard or other discount entitlement
+    get:
+      operationId: railcard_details
+      summary: Detailed information on a railcard or other discount entitlement
+      description: Detailed information on a railcard including allowable passenger
+        group size, purchase price etc.
+      tags:
+        - Detailed Information
+      parameters:
+        - in: query
+          name: code
+          description: Railcard or Discount code or name (case-insensitive)
+          schema:
+            type: string
+            minLength: 1
+          examples:
+            rlc_code:
+              $ref: '#/components/examples/rlc_code'
+            rlc_name:
+              $ref: '#/components/examples/rlc_name'
+          required: true
+      responses:
+        '200':
+          description: Railcard Details response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/railcard'
+  /legacy_ticket:
+    summary: Ticket details
+    description: Detailed information on individual ticket types
+    get:
+      operationId: ticket_details
+      summary: Detailed information on individual ticket types
+      description: Detailed information on a ticket type including class of travel,
+        validity (days of travel allowed) etc.
+      tags:
+        - Detailed Information
+      parameters:
+        - in: query
+          name: code
+          description: Ticket Code (case-insensitive)
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+          examples:
+            tkt_code:
+              summary: Ticket code
+              description: 3-character code identifying a ticket
+              value: CDR
+          required: true
+      responses:
+        '200':
+          description: Ticket Details response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticket_response'
+  /legacy_restrictions:
+    summary: Restriction code details
+    description: Details of time and train restrictions associated with one or more
+      restriction codes
+    get:
+      operationId: restriction_details
+      summary: Detailed information on time- and train-based restrictions
+      description: Details of time and train restrictions associated with one or more
+        restriction codes
+      tags:
+        - Detailed Information
+      parameters:
+        - in: query
+          name: codes
+          explode: false
+          description: Restriction Codes
+          schema:
+            type: array
+            minLength: 1
+            maxLength: 5
+            items:
+              $ref: '#/components/schemas/restriction_code'
+          examples:
+            restriction_code:
+              summary: Restriction Code
+              description: Array of 2-character codes identifying one or more sets
+                of restrictions
+              value:
+                - B1
+          required: true
+      responses:
+        '200':
+          description: Restriction Code response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/restriction_response'
+  /legacy_ac_loc:
+    summary: Location autocomplete
+    description: Autocomplete suggestions for location names
+    get:
+      operationId: autocomplete_location
+      summary: Autocomplete suggestions for locations
+      description: Autocomplete suggestions for location names
+      tags:
+        - Autocomplete Suggestions
+      parameters:
+        - $ref: '#/components/parameters/term'
+      responses:
+        '200':
+          description: Location autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                title: Autocomplete Response
+                description: Suggestions for location names
+                items:
+                  type: object
+                  title: List of location names
+                  properties:
+                    label:
+                      type: string
+                      description: Pop-up label to be displayed to user. If autocomplete
+                        matched a CRS code, this will be shown in (round brackets)
+                        at the start of the label, before the suggested location name.
+                        If it matched an NLC code, this will be shown in [square brackets]
+                        after the location name. Otherwise the label will simply contain
+                        the long version of the location name.
+                      minLength: 0
+                      maxLength: 37
+                    value:
+                      type: string
+                      description: Long name of auto-suggested location, e.g. to populate
+                        the text field with when the user clicks on the suggestion
+                        or removes focus from the field.
+                      minLength: 0
+                      maxLength: 30
+                    code:
+                      $ref: '#/components/schemas/loc_code'
+  /legacy_ac_rlc:
+    summary: Railcard autocomplete
+    description: Autocomplete suggestions for railcard/discount names
+    get:
+      operationId: autocomplete_railcard
+      summary: Autocomplete suggestions for railcards/discounts
+      description: Autocomplete suggestions for railcard/discount names
+      tags:
+        - Autocomplete Suggestions
+      parameters:
+        - $ref: '#/components/parameters/term'
+      responses:
+        '200':
+          description: Railcard autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                title: Autocomplete Response
+                description: Suggestions for railcard names
+                items:
+                  type: object
+                  title: List of railcard names
+                  properties:
+                    label:
+                      type: string
+                      description: Pop-up label to be displayed to user. Generally
+                        contains simply the railcard name, but if autocomplete matched
+                        a railcard code, this will be shown in (round brackets) at
+                        the start of the label, before the suggested railcard name.
+                      minLength: 0
+                      maxLength: 37
+                    value:
+                      type: string
+                      description: Railcard/discount name, e.g. to populate the text
+                        field with when the user clicks on the suggestion or removes
+                        focus from the field.
+                      minLength: 0
+                      maxLength: 30
+                    code:
+                      $ref: '#/components/schemas/rlc_code'
+  /legacy_ac_rvr:
+    summary: Rover/ranger autocomplete
+    description: Autocomplete suggestions for rover/ranger names
+    get:
+      operationId: autocomplete_rover
+      summary: Autocomplete suggestions for rovers/rangers
+      description: |
+        Autocomplete suggestions for rovers/rangers.
+
+        N.B. returns the rover/ranger group (with group NLC) of any match.
+      tags:
+        - Autocomplete Suggestions
+      parameters:
+        - $ref: '#/components/parameters/term'
+      responses:
+        '200':
+          description: Rover autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                title: Autocomplete Response
+                description: Suggestions for rover/ranger names
+                items:
+                  type: object
+                  title: List of rover/ranger names
+                  properties:
+                    label:
+                      type: string
+                      description: Pop-up label to be displayed to user. If autocomplete
+                        matched an individual rover name or rover code, the label
+                        will contain the individual rover name with (if rover code
+                        matched) the rover code in (round brackets) before the rover
+                        name. If autocomplete matched a rover group name or rover
+                        group NLC code, the label will contain the group long name
+                        with (if NLC matched) the rover group NLC code in [square
+                        brackets] after the name.
+                      minLength: 0
+                      maxLength: 37
+                    value:
+                      type: string
+                      description: Long name of auto-suggested rover/ranger group,
+                        e.g. to populate the text field with when the user clicks
+                        on the suggestion or removes focus from the field.
+                      minLength: 0
+                      maxLength: 30
+                    code:
+                      $ref: '#/components/schemas/nlc'
+security:
+  - basic_auth: []
+servers:
+  - url: https://gw.brfares.com/
+    description: Live API Gateway

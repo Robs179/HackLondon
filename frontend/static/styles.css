@@ -1,9 +1,129 @@
+/* Modern reset */
 body {
-    font-family: Arial, sans-serif;
+    background-color: #eef2f7;
+    font-family: "Poppins", Arial, sans-serif;
     text-align: center;
     padding: 20px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
-input, button {
-    margin: 10px;
+
+/* Light & Dark Mode Toggle */
+body.dark-mode {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Title Styling */
+h1 {
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+body.dark-mode h1 {
+    color: #ffffff;
+}
+
+/* Centering the form */
+.container {
+    background: white;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    margin: auto;
+    transition: background-color 0.3s ease-in-out;
+}
+body.dark-mode .container {
+    background: #2c2c2c;
+}
+
+/* Labels */
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+/* Input Fields */
+input {
+    width: 100%;
     padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(to right, #4CAF50, #45a049);
+    color: white;
+    transition: background 0.3s, transform 0.2s;
+}
+button:hover {
+    background: linear-gradient(to right, #45a049, #3e8e41);
+    transform: scale(1.05);
+}
+
+/* Dark Mode Toggle Button */
+#dark-mode-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #222;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+body.dark-mode #dark-mode-toggle {
+    background: #ddd;
+    color: #222;
+}
+
+/* Results Section */
+#results {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: left;
+    transition: background-color 0.3s ease-in-out;
+}
+body.dark-mode #results {
+    background: #2c2c2c;
+}
+
+/* Stylish Results */
+.result-card {
+    padding: 10px;
+    border-left: 5px solid #4CAF50;
+    margin-bottom: 10px;
+    background: #f8f8f8;
+    border-radius: 5px;
+}
+body.dark-mode .result-card {
+    background: #444;
 }

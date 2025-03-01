@@ -77,15 +77,16 @@ class RouteParser:
         return combined_journeys
 
     @classmethod
-    def calculateTfLFares(cls, journey, time, railcard) -> {(str, str): float}:
+    def calculateTfLFares(cls, journey, time, weekday, railcard) -> {(str, str): float}:
         """
         Calculates TfL fares for any valid partition by calling TfLFareManager.find_fares.
         Outputs a dictionary with keys as tuples (origin, destination) and values as the lowest non-alternative fare.
         """
         # Determine if the time is during peak hours
-        peak = 640 <= time <= 930 or 1600 <= time <= 1900
+        peak = (630 <= time <= 930 or 1600 <= time <= 1900) and weekday
 
         fares_dict = {}
+        fares_dict[(journey[0][0], journey[-1][1])] = TfLFareManager.find_fares(journey[0][0], journey[-1][1], railcard)
 
         # Generate all possible origin-destination pairs
         for i in range(len(journey)):
@@ -103,6 +104,8 @@ class RouteParser:
                 if valid_fares:
                     min_fare = min(valid_fares, key=lambda f: f.cost)
                     fares_dict[(origin, destination)] = min_fare.cost
+                else:
+                    fares_dict[(origin, destination)] = float('inf')
 
         return fares_dict
 
@@ -110,10 +113,10 @@ class RouteParser:
 
 
 if __name__ == "__main__":
-    routes = RouteParser.route_finder('910GAMERSHM', '910GGTWK')
+    routes = RouteParser.route_finder('910GSTFD', '910GGTWK')
     print(routes)
     for route in routes:
-        print(RouteParser.calculateTfLFares(route, 1500, True))
+        print(RouteParser.calculateTfLFares(route, 2100,True, True))
 
 
 

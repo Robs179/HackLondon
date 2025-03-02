@@ -48,6 +48,17 @@ body.dark-mode h1 {
     color: #ffffff;
 }
 
+/* Fix Flex Container Layout */
+.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 150px);
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 40px;
+}
+
 /* Centering the form */
 .container {
     background: white;
@@ -56,8 +67,11 @@ body.dark-mode h1 {
     padding: 20px;
     width: 90%;
     max-width: 400px;
-    margin: auto;
+    margin: 0;
+    flex: 0 1 400px;
+    align-items: center;
     transition: background-color 0.3s ease-in-out;
+    height: fit-content;
 }
 body.dark-mode .container {
     background: #2c2c2c;
@@ -130,15 +144,17 @@ body.dark-mode #dark-mode-toggle {
 #results-title {
     color: white;
     margin-top: 20px;
-    display: none;
+    text-align: left;
+    margin-bottom: 10px;
+    display: block;
 }
 
 /* Results Section */
 #results {
     /* display: none; Added to hide results when empty */
-    margin-top: 20px;
+    margin: 0;
     padding: 20px;
-    background: white;
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 90%;
@@ -146,9 +162,21 @@ body.dark-mode #dark-mode-toggle {
     margin: 20px auto;
     text-align: left;
     transition: background-color 0.3s ease-in-out;
+    color: white;
 }
 body.dark-mode #results {
     background: #2c2c2c;
+}
+
+/* Fix Results Wrapper */
+.results-wrapper {
+    flex: 0 1 500px;
+    display: none;
+    height: fit-content;
+}
+
+.results-wrapper.visible {
+    display: block;
 }
 
 /* Stylish Results */
@@ -156,34 +184,10 @@ body.dark-mode #results {
     padding: 10px;
     border-left: 5px solid #4CAF50;
     margin-bottom: 10px;
-    background: #f8f8f8;
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 5px;
+    color: white;
 }
 body.dark-mode .result-card {
     background: #444;
-}
-
-/* Checkbox Container */
-.checkbox-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 15px 0;
-}
-
-.checkbox-container input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-    cursor: pointer;
-}
-
-.checkbox-container label {
-    display: inline;
-    margin: 0;
-    cursor: pointer;
-}
-
-body.dark-mode .checkbox-container label {
-    color: #ffffff;
 }

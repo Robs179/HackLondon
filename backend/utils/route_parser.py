@@ -1,7 +1,7 @@
-from utils.nr_fare_calculator import NRFareManager
+from nr_fare_calculator import NRFareManager
 import re
 import requests
-from utils.tfl_fare_calculator import *
+from tfl_fare_calculator import *
 
 
 class RouteParser:
@@ -272,4 +272,4 @@ class RouteParser:
 
 
 if __name__ == "__main__":
-    print(RouteParser.find_optimum_fare('940GZZLUGDG', '910GGTWK', "1630", False))
+    print(RouteParser.find_optimum_fare('940GZZLUGDG', '910GGTWK', "1800", False))

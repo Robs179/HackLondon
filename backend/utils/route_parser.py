@@ -1,15 +1,17 @@
 from utils.nr_fare_calculator import NRFareManager
-from utils.tfl_fare_calculator import *
 import re
+import requests
+from utils.tfl_fare_calculator import *
+
 
 class RouteParser:
     # All class methods. DO NOT INSTANTIATE!
 
     @classmethod
-    def route_finder(cls, origin: str, destination: str) -> [[(str, str)]]:
+    def route_finder(cls, origin: str, destination: str, time: str) -> [[(str, str)]]:
         # returns the list of stations, only points of interchange, as a list of tuples
         url = 'https://api.tfl.gov.uk/'
-        path = f'Journey/JourneyResults/{origin}/to/{destination}?time=0900&modes=tube,dlr,overground,elizabeth-line,national-rail'
+        path = f'Journey/JourneyResults/{origin}/to/{destination}?time={time}&modes=tube,dlr,overground,elizabeth-line,national-rail'
 
         request_url = url + path
 
@@ -77,7 +79,7 @@ class RouteParser:
         return combined_journeys
 
     @classmethod
-    def journeyTfLFares(cls, journey, time, weekday, railcard) -> {(str, str): float}:
+    def journeyTfLFares(cls, journey, time, weekday, railcard) -> [{(str, str): Fare}]:
         """
         Calculates TfL fares for any valid partition by calling TfLFareManager.find_fares.
         Outputs a dictionary with keys as tuples (origin, destination) and values as the lowest non-alternative fare.
@@ -104,15 +106,15 @@ class RouteParser:
                 # Find the minimum cost fare
                 if valid_fares:
                     min_fare = min(valid_fares, key=lambda f: f.cost)
-                    fares_dict[(origin, destination)] = min_fare.cost
+                    fares_dict[(origin, destination)] = min_fare
                 else:
-                    fares_dict[(origin, destination)] = float('inf')
+                    fares_dict[(origin, destination)] = Fare(origin, destination, float('inf'), peak, False, None)
 
         return fares_dict
 
     @classmethod
     def getTfLDict(cls, origin, destination, time, weekday, railcard):
-        routes = RouteParser.route_finder(origin, destination)
+        routes = RouteParser.route_finder(origin, destination, time)
         prices = []
         for route in routes:
             prices.append(RouteParser.journeyTfLFares(route, time, weekday, railcard))
@@ -126,7 +128,6 @@ class RouteParser:
 
         resp = requests.get(request_url)
         data = resp.json()
-
         common_name = data['commonName']
         # Remove the station type suffix (e.g., Underground Station, DLR Station, Rail Station)
         name = re.sub(r'\s+(Underground|DLR|Rail)\s+Station$', '', common_name)
@@ -139,7 +140,7 @@ class RouteParser:
         return name
 
     @classmethod
-    def journeyNRFares(cls, journey, time, weekday, railcard) -> {(str, str): float}:
+    def journeyNRFares(cls, journey, time, weekday, railcard) -> {(str, str): Fare}:
         """
         Calculates National Rail fares for valid partitions of the journey, excluding pairs entirely within non-NR stations.
         """
@@ -169,21 +170,94 @@ class RouteParser:
                 )
 
                 # Assuming fare is a Fare object with a 'cost' attribute; adjust based on actual implementation
-                fares_dict[(origin_tfl, dest_tfl)] = fare.cost
+                fares_dict[(origin_tfl, dest_tfl)] = fare
 
         return fares_dict
 
 
     @classmethod
     def getNRDict(cls, origin, destination, time, weekday, railcard):
-        routes = RouteParser.route_finder(origin, destination)
+        routes = RouteParser.route_finder(origin, destination, time)
         prices = []
         for route in routes:
             prices.append(RouteParser.journeyNRFares(route, time, weekday, railcard))
         return prices
 
+    @classmethod
+    def find_optimum_fare(cls, origin: str, destination: str, time: str, railcard: bool) -> list:
+        def generate_all_splits(route):
+            n = len(route)
+            splits = []
+            for mask in range(0, 1 << (n - 1)):
+                current_split = []
+                start = 0
+                for i in range(n - 1):
+                    if mask & (1 << i):
+                        end = i + 1
+                        current_split.append((start, end))
+                        start = end
+                current_split.append((start, n))
+                segments = []
+                for s, e in current_split:
+                    origin_segment = route[s][0]
+                    dest_segment = route[e - 1][1]
+                    segments.append((origin_segment, dest_segment))
+                splits.append(segments)
+            return splits
+
+        routes = cls.route_finder(origin, destination, time)
+        min_total_cost = float('inf')
+        optimal_fares = []
+
+        for route in routes:
+            tfl_partitions = cls.journeyTfLFares(route, time, True, True)
+            nr_partitions = cls.journeyNRFares(route, time, True, True)
+
+            # Collect minimum TfL fares for each segment
+            tfl_fares = {}
+            for segment in tfl_partitions.keys():
+                fare = tfl_partitions[segment]
+                if segment not in tfl_fares or fare.cost < tfl_fares[segment].cost:
+                    tfl_fares[segment] = fare
+
+            # Collect minimum NR fares for each segment
+            nr_fares = {}
+            for segment in nr_partitions:
+                fare = nr_partitions[segment]
+                if segment not in nr_fares or fare.cost < nr_fares[segment].cost:
+                    nr_fares[segment] = fare
+
+            # Combine to get the minimum fare (TfL or NR) for each segment
+            combined_fares = {}
+            all_segments = set(tfl_fares.keys()).union(nr_fares.keys())
+            for segment in all_segments:
+                tfl_fare = tfl_fares.get(segment)
+                nr_fare = nr_fares.get(segment)
+                if tfl_fare and nr_fare:
+                    combined_fares[segment] = tfl_fare if tfl_fare.cost < nr_fare.cost else nr_fare
+                elif tfl_fare:
+                    combined_fares[segment] = tfl_fare
+                elif nr_fare:
+                    combined_fares[segment] = nr_fare
+
+            splits = generate_all_splits(route)
+            for split in splits:
+                total_cost = 0
+                current_fares = []
+                valid = True
+                for seg in split:
+                    fare = combined_fares.get(seg)
+                    if not fare:
+                        valid = False
+                        break
+                    total_cost += fare.cost
+                    current_fares.append(fare)
+                if valid and total_cost < min_total_cost:
+                    min_total_cost = total_cost
+                    optimal_fares = current_fares
+
+        return optimal_fares
+
 
 if __name__ == "__main__":
-    print(RouteParser.route_finder('940GZZLUBND', '910GGTWK'))
-    print(RouteParser.getTfLDict('940GZZLUBND', '910GGTWK', "1600", True, True))
-    print(RouteParser.getNRDict('940GZZLUBND', '910GGTWK', "1600", True, True))
+    print(RouteParser.find_optimum_fare('940GZZLUBND', '910GGTWK', "1700", True))

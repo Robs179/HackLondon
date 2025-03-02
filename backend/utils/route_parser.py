@@ -182,9 +182,6 @@ class RouteParser:
             prices.append(RouteParser.journeyNRFares(route, time, weekday, railcard))
         return prices
 
-    @classmethod
-
-
 
 if __name__ == "__main__":
     print(RouteParser.route_finder('940GZZLUBND', '910GGTWK'))

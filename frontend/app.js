@@ -23,7 +23,8 @@ async function getFares() {
         </div>
         <div class="result-card">
             <h3>🚆 National Rail Fare:</h3> 
-            <p>${hasRailcard ? '(With Railcard) ' : ''} From${data.nr.origin_code}, To ${data.nr.destination_code} for the price of £${data.nr.cost}</p>
+            <p>${hasRailcard ? '(With Railcard) ' : ''} From ${data.nr.origin_code}, To ${data.nr.destination_code} for the price of £${data.nr.cost}</p>
+            <p>Description ${data.nr.description}</p>
         </div>
     `;
     document.getElementById("results").style.display = "block";

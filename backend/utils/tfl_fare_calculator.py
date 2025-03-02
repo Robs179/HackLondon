@@ -1,3 +1,5 @@
+import re
+
 import requests
 import json
 
@@ -51,6 +53,8 @@ class TfLFareManager:
     @classmethod
     def find_fares(cls, origin_code: str, destination_code: str, railcard=False) -> list:
         # Assemble the API path
+        origin_code = re.sub(r'(?:%20| )', '', origin_code)
+        destination_code = re.sub(r'(?:%20| )', '', destination_code)
         url = 'https://api.tfl.gov.uk/'
         path = f'/stoppoint/{origin_code}/fareto/{destination_code}'
 
@@ -121,7 +125,7 @@ class TfLFareManager:
 
 
 if __name__ == '__main__':
-    #fares = TfLFareManager.find_fares('910GWATFDJ', '910GGTWK', railcard=True)
+    #fares = TfLFareManager.find_fares('940GZZLUGDG', '910GGTWK', railcard=True)
     #print(fares)
-    stations = TfLFareManager.name_to_code('Goodge Street')
+    stations = TfLFareManager.name_to_code("Uxbridge")
     print(stations)

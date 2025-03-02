@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import sys
 from config import Config
+import re
 
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
@@ -42,23 +43,19 @@ def home():
 
 @app.get("/find-best-fare/")
 def find_best_fare(from_station: str, to_station: str, railcard: bool = False):
-    # from_station_code = RouteParser.tfl_code_to_name(from_station)
-    # to_station_code = RouteParser.tfl_code_to_name(to_station)
-    fares = RouteParser.find_optimum_fare(from_station, to_station, "1630", railcard)
+    list_of_dicts = RouteParser.find_optimum_fare(from_station, to_station, "0900", railcard)
     tfl_fares = {}
     nr_fares = {}
-    # for i in list_of_dicts:
-    #     if i["is_nr"] == False:
-    #         tfl_fares = i
-    #     else:
-    #         nr_fares = i
+    for i in list_of_dicts:
+         if i["is_nr"] == False:
+             tfl_fares = i
+             i["origin_code"] = re.sub(r'%20', ' ', RouteParser.tfl_code_to_name(i["origin_code"]))
+             i["destination_code"] = re.sub(r'%20', ' ',RouteParser.tfl_code_to_name(i["destination_code"]))
+         else:
+             i["origin_code"] = re.sub(r'%20', ' ',i["origin_code"])
+             i["destination_code"] = re.sub(r'%20', ' ',i["destination_code"])
+             nr_fares = i
 
-    # print(JSONResponse(content={"tfl": tfl_fares, "nr": nr_fares}))
-    for i in fares:
-        if i.is_nr:
-            nr_fares = i.__repr__()
-        else:
-            tfl_fares = i.__repr__()
     return JSONResponse(content={"tfl": tfl_fares, "nr": nr_fares})
 
 

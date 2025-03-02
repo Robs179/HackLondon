@@ -263,7 +263,7 @@ class RouteParser:
                     min_total_cost = total_cost
                     optimal_fares = current_fares
 
-        return optimal_fares
+        return cls.compile_fares_to_json(optimal_fares)
 
     @classmethod
     def compile_fares_to_json(cls, fares_list):
@@ -279,4 +279,4 @@ class RouteParser:
 
 
 if __name__ == "__main__":
-    print(RouteParser.find_optimum_fare('940GZZLUWSM', '910GGTWK', "1800", False))
+    print(RouteParser.find_optimum_fare('940GZZDLBEC', '910GGTWK', "1800", False))

@@ -108,7 +108,7 @@ class RouteParser:
                     min_fare = min(valid_fares, key=lambda f: f.cost)
                     fares_dict[(origin, destination)] = min_fare
                 else:
-                    fares_dict[(origin, destination)] = Fare(origin, destination, float('inf'), peak, False, None)
+                    fares_dict[(origin, destination)] = Fare(origin, destination, float('inf'), peak, False, None, None)
 
         return fares_dict
 
@@ -184,7 +184,7 @@ class RouteParser:
         return prices
 
     @classmethod
-    def find_optimum_fare(cls, origin: str, destination: str, time: str, railcard: bool) -> list:
+    def find_optimum_fare(cls, origin: str, destination: str, time: str, railcard: bool) -> str:
         def generate_all_splits(route):
             n = len(route)
             splits = []
@@ -256,8 +256,20 @@ class RouteParser:
                     min_total_cost = total_cost
                     optimal_fares = current_fares
 
-        return optimal_fares
+        return cls.compile_fares_to_json(optimal_fares)
+
+    @classmethod
+    def compile_fares_to_json(cls, fares_list):
+        """
+        Compiles a list of Fare objects into a single JSON array.
+        Each Fare object is converted using its to_json() method.
+        """
+        # Convert each Fare object to its JSON representation and parse into a dict
+        fares_data = [json.loads(fare.to_json()) for fare in fares_list]
+
+        # Convert the list of dicts to a formatted JSON string
+        return json.dumps(fares_data, indent=2)
 
 
 if __name__ == "__main__":
-    print(RouteParser.find_optimum_fare('940GZZLUBND', '910GGTWK', "1700", True))
+    print(RouteParser.find_optimum_fare('940GZZLUGDG', '910GGTWK', "1630", False))

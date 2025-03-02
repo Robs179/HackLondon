@@ -28,8 +28,7 @@ class NRFareManager:
             )
             response = urllib.request.urlopen(req)
             html_content = response.read().decode('utf-8')
-        except Exception as e:
-            print("Error fetching URL:", e)
+        except Exception:
             return None
 
         # Parse the HTML
@@ -105,5 +104,5 @@ class NRFareManager:
 
 
 if __name__ == '__main__':
-    fare = NRFareManager.fare_calculator('GTW', 'KGX')
+    fare = NRFareManager.fare_calculator('GTW', 'BTN')
     print(fare)

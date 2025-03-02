@@ -114,11 +114,10 @@ class RouteParser:
         prices = []
         for route in routes:
             prices.append(RouteParser.calculateTfLFares(route,time,weekday,railcard))
-
+        return prices
 
 if __name__ == "__main__":
-    routes = RouteParser.route_finder('910GBONDST', '910GGTWK')
-    prices = []
+    p
     for route in routes:
         print(RouteParser.calculateTfLFares(route, 2100,True, True))
 

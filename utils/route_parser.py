@@ -109,6 +109,7 @@ class RouteParser:
 
         return fares_dict
 
+    @classmethod
     def getTfLDict(cls, origin, destination, time, weekday, railcard):
         routes = RouteParser.route_finder(origin, destination)
         prices = []
@@ -117,9 +118,6 @@ class RouteParser:
         return prices
 
 if __name__ == "__main__":
-    p
-    for route in routes:
-        print(RouteParser.calculateTfLFares(route, 2100,True, True))
-
+    print(RouteParser.getTfLDict('940GZZLUBND','910GGTWK', 1300, True, True))
 
 

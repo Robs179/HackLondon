@@ -1,7 +1,9 @@
-from nr_fare_calculator import NRFareManager
+import json
+
+from backend.utils.nr_fare_calculator import NRFareManager
 import re
 import requests
-from tfl_fare_calculator import *
+from backend.utils.tfl_fare_calculator import Fare, TfLFareManager
 
 
 class RouteParser:

@@ -1,6 +1,6 @@
 import re
 
-from tfl_fare_calculator import Fare
+from backend.utils.tfl_fare_calculator import Fare
 from bs4 import BeautifulSoup
 import urllib
 

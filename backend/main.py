@@ -2,9 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 import json
+
+from backend.utils.route_parser import RouteParser
 from config import Config
-# Updated import from utils package:
-from utils.route_parser import RouteParser as rp
+
 
 app = FastAPI()
 
@@ -25,14 +26,9 @@ tfl_url = Config.TFL_URL
 def home():
     return {"message": "Ticket Optimizer API"}
 
-@app.get("/get-fares-tfl/")
-def get_fares_tfl(from_station: str, to_station: str, railcard: bool = False):
-    # tfl_dict = rp.getTfLDict(from_station, to_station, 1630, railcard, True)
-    # tfl_json = json.dumps(tfl_dict)
-    # Extract the first value from the first dictionary in tfl_dict
-    # Debug: print the first value
-    # print(tfl_json)
-    return {"message": "This is a message"}
+@app.get("/find-best-fare/")
+def find_best_fare(from_station: str, to_station: str, railcard: bool = False):
+    return RouteParser.find_optimum_fare(from_station, to_station, "1630", railcard)
 
 # Run with: uvicorn main:app --reload
 if __name__ == "__main__":

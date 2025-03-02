@@ -18,7 +18,7 @@ app.add_middleware(
 
 tfl_key = Config.TFL_KEY
 tfl_url = Config.TFL_URL
-NATIONAL_RAIL_API_URL = "https://api.nationalrail.co.uk/fares"
+# NATIONAL_RAIL_API_URL = "https://api.nationalrail.co.uk/fares"
 
 @app.get("/")
 def home():
@@ -26,19 +26,17 @@ def home():
 
 @app.get("/get-fares-tfl/")
 def get_fares_tfl(from_station: str, to_station: str):
-    return rp.route_finder(from_station, to_station)
+    tdl_dict = rp.getTfLDict(from_station, to_station, 1630, True, True)
+    # tdl_dict = rp.getTfLDict("910GBONDST", "910GGTWK", 1630, True, True)
+    return {
+        "tfl_fares": tdl_dict[0]}
 
 @app.get("/get-fares/")
 def get_fares(from_station: str, to_station: str):
     # Call TfL API
     tfl_response = requests.get(f"{tfl_url}/{from_station}/to/{to_station}")
-    
-    # Call BR Fares API
-    national_rail_response = requests.get(f"{NATIONAL_RAIL_API_URL}?from={from_station}&to={to_station}")
-
-    return {
-        "tfl_fares": tfl_response.json(),
-        "national_rail_fares": national_rail_response.json()
-    }
 
 # Run with: uvicorn main:app --reload
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

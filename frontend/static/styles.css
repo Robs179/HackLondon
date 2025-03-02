@@ -5,15 +5,26 @@
     box-sizing: border-box;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
 body {
-    /* Light Mode Background using lighttrain.jpg */
-    background-image: url("images/lighttrain.jpg");
-    background-repeat: no-repeat;
-    /* background-size: cover; */
+    /* Light Mode Background using canarywharf.jpg */
+    background: url("images/canarywharf.jpg") no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
     font-family: "Poppins", Arial, sans-serif;
     text-align: center;
     padding: 20px;
     transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    position: relative;
 }
 
 /* Light & Dark Mode Toggle */
@@ -27,9 +38,9 @@ body.dark-mode {
 
 /* Title Styling */
 h1 {
-    font-size: 2.2em;
+    font-size: 3.5em;  /* Changed from 2.2em to 3.5em */
     font-weight: bold;
-    color: #333;
+    color: white;  /* Changed from #333 to white */
     margin-bottom: 10px;
     transition: color 0.3s;
 }
@@ -115,9 +126,16 @@ body.dark-mode #dark-mode-toggle {
     color: #222;
 }
 
+/* Results Title */
+#results-title {
+    color: white;
+    margin-top: 20px;
+    display: none;
+}
+
 /* Results Section */
 #results {
-    display: none; /* Added to hide results when empty */
+    /* display: none; Added to hide results when empty */
     margin-top: 20px;
     padding: 20px;
     background: white;

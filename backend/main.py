@@ -25,11 +25,13 @@ def home():
     return {"message": "Ticket Optimizer API"}
 
 @app.get("/get-fares-tfl/")
-def get_fares_tfl(from_station: str, to_station: str):
-    tdl_dict = rp.getTfLDict(from_station, to_station, 1630, True, True)
-    # tdl_dict = rp.getTfLDict("910GBONDST", "910GGTWK", 1630, True, True)
+def get_fares_tfl(from_station: str, to_station: str, railcard: bool = False):
+    # Use the railcard parameter in the fare calculation
+    tdl_dict = rp.getTfLDict(from_station, to_station, 1630, railcard, True)
     return {
-        "tfl_fares": tdl_dict[0]}
+        "tfl_fares": tdl_dict[0],
+        "national_rail_fares": tdl_dict[1]
+    }
 
 @app.get("/get-fares/")
 def get_fares(from_station: str, to_station: str):

@@ -1,4 +1,4 @@
-from tfl_fare_calculator import *
+from utils.tfl_fare_calculator import *
 
 
 class RouteParser:

@@ -26,8 +26,10 @@ def home():
 
 @app.get("/get-fares-tfl/")
 def get_fares_tfl(from_station: str, to_station: str):
-    tdl_dict = rp.getTfLDict("910GBONDST", "910GGTWK", 1630, True, True)
-    return tdl_dict
+    tdl_dict = rp.getTfLDict(from_station, to_station, 1630, True, True)
+    # tdl_dict = rp.getTfLDict("910GBONDST", "910GGTWK", 1630, True, True)
+    return {
+        "tfl_fares": tdl_dict[0]}
 
 @app.get("/get-fares/")
 def get_fares(from_station: str, to_station: str):
@@ -35,3 +37,6 @@ def get_fares(from_station: str, to_station: str):
     tfl_response = requests.get(f"{tfl_url}/{from_station}/to/{to_station}")
 
 # Run with: uvicorn main:app --reload
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

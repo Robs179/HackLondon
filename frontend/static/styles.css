@@ -126,9 +126,16 @@ body.dark-mode #dark-mode-toggle {
     color: #222;
 }
 
+/* Results Title */
+#results-title {
+    color: white;
+    margin-top: 20px;
+    display: none;
+}
+
 /* Results Section */
 #results {
-    display: none; /* Added to hide results when empty */
+    /* display: none; Added to hide results when empty */
     margin-top: 20px;
     padding: 20px;
     background: white;

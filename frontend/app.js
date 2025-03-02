@@ -9,7 +9,7 @@ async function getFares() {
     document.getElementById("loading").style.display = "block";
 
     // Fetch data from the backend API
-    let response = await fetch(`http://127.0.0.1:8000/get-fares-tfl/?from_station=${fromStation}&to_station=${toStation}&date=${date}&time=${time}&railcard=${hasRailcard}`);
+    let response = await fetch(`http://127.0.0.1:8000/find-best-fare/?from_station=${fromStation}&to_station=${toStation}&date=${date}&time=${time}&railcard=${hasRailcard}`);
     let data = await response.json();
 
     // Hide loading spinner
@@ -19,11 +19,11 @@ async function getFares() {
     document.getElementById("results").innerHTML = `
         <div class="result-card">
             <h3>🚇 TfL Fare:</h3> 
-            <p>£${data.message}</p>
+            <p>£${data}</p>
         </div>
         <div class="result-card">
             <h3>🚆 National Rail Fare:</h3> 
-            <p>${hasRailcard ? '(With Railcard) ' : ''}£${data.message}</p>
+            <p>${hasRailcard ? '(With Railcard) ' : ''}£${data}</p>
         </div>
     `;
     document.getElementById("results").style.display = "block";

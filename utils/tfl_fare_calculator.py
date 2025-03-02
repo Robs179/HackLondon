@@ -47,6 +47,7 @@ class Station:
 
 
 class TfLFareManager:
+    station_memory = {}
     # All methods to be static for organisation purposes. DO NOT INSTANTIATE!
     @classmethod
     def find_fares(cls, origin_code: str, destination_code: str, railcard=False) -> list:
@@ -121,7 +122,7 @@ class TfLFareManager:
 
 
 if __name__ == '__main__':
-    fares = TfLFareManager.find_fares('910GWATFDJ', '910GGTWK', railcard=True)
+    fares = TfLFareManager.find_fares('910GHTRWTM5', '910GGTWK', railcard=True)
     print(fares)
     stations = TfLFareManager.name_to_code('Gatwick Airport Rail')
     print(stations)

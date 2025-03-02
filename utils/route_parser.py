@@ -1,5 +1,6 @@
+from utils.nr_fare_calculator import NRFareManager
 from utils.tfl_fare_calculator import *
-
+import re
 
 class RouteParser:
     # All class methods. DO NOT INSTANTIATE!
@@ -8,7 +9,7 @@ class RouteParser:
     def route_finder(cls, origin: str, destination: str) -> [[(str, str)]]:
         # returns the list of stations, only points of interchange, as a list of tuples
         url = 'https://api.tfl.gov.uk/'
-        path = f'Journey/JourneyResults/{origin}/to/{destination}'
+        path = f'Journey/JourneyResults/{origin}/to/{destination}?time=0900&modes=tube,dlr,overground,elizabeth-line,national-rail'
 
         request_url = url + path
 
@@ -82,6 +83,7 @@ class RouteParser:
         Outputs a dictionary with keys as tuples (origin, destination) and values as the lowest non-alternative fare.
         """
         # Determine if the time is during peak hours
+        time = int(time)
         peak = (630 <= time <= 930 or 1600 <= time <= 1900) and weekday
 
         fares_dict = {}
@@ -117,8 +119,74 @@ class RouteParser:
         return prices
 
     @classmethod
+    def tfl_code_to_name(cls, tfl_code) -> str:
+        url = 'https://api.tfl.gov.uk/'
+        path = f'stoppoint/{tfl_code}'
+        request_url = url + path
+
+        resp = requests.get(request_url)
+        data = resp.json()
+
+        common_name = data['commonName']
+        # Remove the station type suffix (e.g., Underground Station, DLR Station, Rail Station)
+        name = re.sub(r'\s+(Underground|DLR|Rail)\s+Station$', '', common_name)
+        name = re.sub(r' ', '%20', name)
+        if name == "London%20Gatwick%20Airport":
+            name = "Gatwick%20Airport"
+        elif name == "Victoria":
+            name = "London%20Victoria"
+
+        return name
+
+    @classmethod
+    def journeyNRFares(cls, journey, time, weekday, railcard) -> {(str, str): float}:
+        """
+        Calculates National Rail fares for valid partitions of the journey, excluding pairs entirely within non-NR stations.
+        """
+        fares_dict = {}
+
+        # Generate all possible origin-destination pairs
+        for i in range(len(journey)):
+            origin_tfl = journey[i][0]
+            for j in range(i, len(journey)):
+                dest_tfl = journey[j][1]
+
+                # Exclude pairs where both stations are non-National Rail (start with 940)
+                if origin_tfl.startswith('940') and dest_tfl.startswith('940'):
+                    continue
+
+                # Convert TfL codes to NR names
+                origin_nr = cls.tfl_code_to_name(origin_tfl)
+                dest_nr = cls.tfl_code_to_name(dest_tfl)
+
+                # Calculate NR fare
+                fare = NRFareManager.fare_calculator(
+                    origin_nr,
+                    dest_nr,
+                    time="1600",
+                    date='2025-03-04',
+                    railcard=True
+                )
+
+                # Assuming fare is a Fare object with a 'cost' attribute; adjust based on actual implementation
+                fares_dict[(origin_tfl, dest_tfl)] = fare.cost
+
+        return fares_dict
+
+
+    @classmethod
     def getNRDict(cls, origin, destination, time, weekday, railcard):
-        raise NotImplementedError
+        routes = RouteParser.route_finder(origin, destination)
+        prices = []
+        for route in routes:
+            prices.append(RouteParser.journeyNRFares(route, time, weekday, railcard))
+        return prices
+
+    @classmethod
+
+
 
 if __name__ == "__main__":
-    print(RouteParser.getTfLDict('940GZZLUBND', '910GGTWK', 1800, True, True))
+    print(RouteParser.route_finder('940GZZLUBND', '910GGTWK'))
+    print(RouteParser.getTfLDict('940GZZLUBND', '910GGTWK', "1600", True, True))
+    print(RouteParser.getNRDict('940GZZLUBND', '910GGTWK', "1600", True, True))

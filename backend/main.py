@@ -12,6 +12,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 from backend.utils.route_parser import RouteParser
+from backend.utils.tfl_fare_calculator import TfLFareManager
 
 # Print current directory to understand where Python is looking
 # print(f"Current directory: {os.getcwd()}")
@@ -41,13 +42,25 @@ def home():
 
 @app.get("/find-best-fare/")
 def find_best_fare(from_station: str, to_station: str, railcard: bool = False):
-    list_of_dicts = RouteParser.find_optimum_fare(from_station, to_station, "1630", railcard)
-    df = pd.read_json(json.dumps())
-    tfl_fares = df[df["is_nr"] == False]
-    nr_fares = df[df["is_nr"] == True]
+    # from_station_code = RouteParser.tfl_code_to_name(from_station)
+    # to_station_code = RouteParser.tfl_code_to_name(to_station)
+    fares = RouteParser.find_optimum_fare(from_station, to_station, "1630", railcard)
+    tfl_fares = {}
+    nr_fares = {}
+    # for i in list_of_dicts:
+    #     if i["is_nr"] == False:
+    #         tfl_fares = i
+    #     else:
+    #         nr_fares = i
 
-    print(JSONResponse(content={"tfl": tfl_fares.to_json, "nr": nr_fares.to_json}))
-    return JSONResponse(content={"tfl": tfl_fares.to_json, "nr": nr_fares.to_json})   
+    # print(JSONResponse(content={"tfl": tfl_fares, "nr": nr_fares}))
+    for i in fares:
+        if i.is_nr:
+            nr_fares = i.__repr__()
+        else:
+            tfl_fares = i.__repr__()
+    return JSONResponse(content={"tfl": tfl_fares, "nr": nr_fares})
+
 
 # Run with: uvicorn main:app --reload
 if __name__ == "__main__":

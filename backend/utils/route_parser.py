@@ -191,7 +191,7 @@ class RouteParser:
         return prices
 
     @classmethod
-    def find_optimum_fare(cls, origin: str, destination: str, time: str, railcard: bool) -> list[Any]:
+    def find_optimum_fare(cls, origin: str, destination: str, time: str, railcard: bool) -> list[any]:
         def generate_all_splits(route):
             n = len(route)
             splits = []
@@ -263,7 +263,7 @@ class RouteParser:
                     min_total_cost = total_cost
                     optimal_fares = current_fares
 
-        return cls.compile_fares_to_json(optimal_fares)
+        return optimal_fares
 
     @classmethod
     def compile_fares_to_json(cls, fares_list):

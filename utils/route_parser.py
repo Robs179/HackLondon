@@ -29,7 +29,7 @@ class RouteParser:
                 dep_station = departure.get("naptanId", "")
                 arr_station = arrival.get("naptanId", "")
 
-                if not(dep_station == "" or arr_station == ""):
+                if not (dep_station == "" or arr_station == ""):
                     # Append the tuple (boarding station, alighting station)
                     journey_tuples.append((dep_station, arr_station))
 
@@ -37,7 +37,6 @@ class RouteParser:
                 station_tuples.append(journey_tuples)
 
         return cls.combine_lu_legs(station_tuples)
-
 
     # where appropriate, combine the journeys of the same type
     # taking advantage that all NR fares start with 910, and non-NR fares start with 940
@@ -77,7 +76,7 @@ class RouteParser:
         return combined_journeys
 
     @classmethod
-    def calculateTfLFares(cls, journey, time, weekday, railcard) -> {(str, str): float}:
+    def journeyTfLFares(cls, journey, time, weekday, railcard) -> {(str, str): float}:
         """
         Calculates TfL fares for any valid partition by calling TfLFareManager.find_fares.
         Outputs a dictionary with keys as tuples (origin, destination) and values as the lowest non-alternative fare.
@@ -114,10 +113,12 @@ class RouteParser:
         routes = RouteParser.route_finder(origin, destination)
         prices = []
         for route in routes:
-            prices.append(RouteParser.calculateTfLFares(route,time,weekday,railcard))
+            prices.append(RouteParser.journeyTfLFares(route, time, weekday, railcard))
         return prices
 
+    @classmethod
+    def getNRDict(cls, origin, destination, time, weekday, railcard):
+        raise NotImplementedError
+
 if __name__ == "__main__":
-    print(RouteParser.getTfLDict('940GZZLUBND','910GGTWK', 1300, True, True))
-
-
+    print(RouteParser.getTfLDict('940GZZLUBND', '910GGTWK', 1800, True, True))

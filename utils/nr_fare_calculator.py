@@ -103,7 +103,6 @@ class NRFareManager:
         )
 
 
-
 if __name__ == '__main__':
     fare = NRFareManager.fare_calculator('GTW', 'KGX')
     print(fare)

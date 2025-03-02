@@ -3,43 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Optimizer</title>
+    <title>FairFinder</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <button id="dark-mode-toggle">Dark Mode 🌙</button>
-    <h1>FairFinder 🎫</h1>
+    <div class="header">
+        <button id="dark-mode-toggle">Dark Mode 🌙</button>
+        <h1>FairFinder 🎫</h1>
+    </div>
     
     <div class="container">
-        <!-- New Date & Time Inputs -->
-        <div class="datetime-group">
-            <label for="date">Date:</label>
-            <input type="date" id="date">
-            <label for="time">Time:</label>
-            <input type="time" id="time">
+        <!-- Date and Time Inputs -->
+        <div class="input-row">
+            <div class="input-group">
+                <label for="date">Date:</label>
+                <div class="input-container">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="date" id="date" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="time">Time:</label>
+                <div class="input-container">
+                    <i class="fas fa-clock"></i>
+                    <input type="time" id="time" required>
+                </div>
+            </div>
         </div>
-        
+
+        <!-- From and To Inputs -->
         <div class="input-row">
             <div class="input-group">
                 <label for="from">From:</label>
-                <input type="text" id="from" placeholder="Enter departure">
+                <div class="input-container">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="from" placeholder="Enter departure" required>
+                </div>
             </div>
             <div class="input-group">
                 <label for="to">To:</label>
-                <input type="text" id="to" placeholder="Enter destination">
+                <div class="input-container">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="to" placeholder="Enter destination" required>
+                </div>
             </div>
         </div>
         
+        <!-- Railcard Checkbox -->
         <div class="checkbox-container">
             <input type="checkbox" id="railcard" name="railcard">
             <label for="railcard">I have a Railcard</label>
         </div>
     
+        <!-- Find Fares Button -->
         <button onclick="getFares()">Find Cheapest Fare</button>
     </div>
     
+    <!-- Loading Spinner -->
+    <div id="loading" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i> Loading...
+    </div>
+
+    <!-- Results Section -->
     <h2 id="results-title">Results</h2>
     <div id="results"></div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 FairFinder</p>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Contact Us</a></p>
+    </footer>
 
     <script src="../app.js"></script>
 </body>

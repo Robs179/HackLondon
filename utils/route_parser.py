@@ -83,6 +83,7 @@ class RouteParser:
         Outputs a dictionary with keys as tuples (origin, destination) and values as the lowest non-alternative fare.
         """
         # Determine if the time is during peak hours
+        time = int(time)
         peak = (630 <= time <= 930 or 1600 <= time <= 1900) and weekday
 
         fares_dict = {}
@@ -181,8 +182,11 @@ class RouteParser:
             prices.append(RouteParser.journeyNRFares(route, time, weekday, railcard))
         return prices
 
+    @classmethod
+
+
 
 if __name__ == "__main__":
-    print(RouteParser.route_finder('940GZZLUBND', '940GZZLUVIC'))
-    print(RouteParser.getTfLDict('940GZZLUBND', '910GGTWK', 900, True, True))
-    print(RouteParser.getNRDict('940GZZLUBND', '910GGTWK', "0900", True, True))
+    print(RouteParser.route_finder('940GZZLUBND', '910GGTWK'))
+    print(RouteParser.getTfLDict('940GZZLUBND', '910GGTWK', "1600", True, True))
+    print(RouteParser.getNRDict('940GZZLUBND', '910GGTWK', "1600", True, True))
